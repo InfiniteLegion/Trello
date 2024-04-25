@@ -7,7 +7,7 @@ public partial class Card
 {
     public long Id { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; } = null!;
 
     public string? Label { get; set; }
 
