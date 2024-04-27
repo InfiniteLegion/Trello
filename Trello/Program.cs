@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-string connectionTest = "Host=localhost;Port=5432;Database=chelo_db_test;Username=postgres;Password=root";
-builder.Services.AddDbContext<CheloDbTestContext>(o => o.UseNpgsql(connectionTest));
+string connectionTest = "Host=localhost;Port=5432;Database=chelo_db;Username=postgres;Password=root";
+builder.Services.AddDbContext<CheloDbContext>(o => o.UseNpgsql(connectionTest));
 
 
 var app = builder.Build();

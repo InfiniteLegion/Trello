@@ -5,12 +5,12 @@ using Trello.Classes;
 namespace Trello.Controllers
 {
     [ApiController]
-    [Route("/users")]
+    [Route("api/users")]
     public class UsersController : ControllerBase
     {
-        private CheloDbTestContext db;
+        private CheloDbContext db;
 
-        public UsersController(CheloDbTestContext db) {  this.db = db; }
+        public UsersController(CheloDbContext db) {  this.db = db; }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserInfo>>> GetAllUsers()
@@ -25,7 +25,7 @@ namespace Trello.Controllers
             UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
-                return NotFound();
+                return BadRequest("User not found");
             }
             return new ObjectResult(user);
         }
@@ -58,7 +58,7 @@ namespace Trello.Controllers
 
             UserInfo originalUser = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == user.Id);
             
-            UserValidator.checkUserUpdate(user, originalUser);
+            UserValidator.CheckUserUpdate(user, originalUser);
             await db.SaveChangesAsync();
             return Ok(originalUser);
         }

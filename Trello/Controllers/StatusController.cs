@@ -1,73 +1,89 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Trello.Classes;
 using Trello.Models;
-using Trello.Services;
 
 namespace Trello.Controllers
 {
-    [Route("api/status")]
+    [Route("api/statuses")]
     [ApiController]
-    public class StatusController: Controller
+    public class StatusController : ControllerBase
     {
-        private readonly IStatusService _statusService;
+        private CheloDbContext db;
 
-        public StatusController(IStatusService statusService)
+        public StatusController(CheloDbContext db)
         {
-            _statusService = statusService;
+            this.db = db;
         }
 
         // GET: api/status
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<IEnumerable<Status>>> GetAllStatuses()
         {
-    var statuses = _statusService.GetAllStatuses();
-    return Ok(statuses);
+            return await db.Statuses.ToListAsync();
         }
 
         // GET: api/status/{id}
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public async Task<ActionResult<Status>> GetStatusById(int id)
         {
- var status = _statusService.GetStatusById(id);
-    if (status == null)
-    {
-        return NotFound();
-    }
-    return Ok(status);
+            Status status = await db.Statuses.FirstOrDefaultAsync(x => x.Id == id);
+            if (status == null)
+            {
+                return NotFound();
+            }
+            return new ObjectResult(status);
         }
 
         // POST: api/status
         [HttpPost]
-        public ActionResult Post([FromBody] string value)
+        public async Task<ActionResult<Status>> AddStatus(Status status)
         {
-            _statusService.AddStatus(value);
-    return CreatedAtAction(nameof(Get), new { id = value }, value);
+            if (status == null)
+            {
+                return BadRequest("Status is null");
+            }
+
+            await db.Statuses.AddAsync(status);
+            await db.SaveChangesAsync();
+            return Ok(status);
         }
 
-        // PUT: api/status/{id}
-        [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] string value)
+        // PUT: api/status/
+        [HttpPut]
+        public async Task<ActionResult<Status>> UpdateStatus(Status status)
         {
-            var statusExists = _statusService.StatusExists(id);
-    if (!statusExists)
-    {
-        return NotFound();
-    }
-    _statusService.UpdateStatus(id, value);
-    return NoContent();
+            if (status == null)
+            {
+                return BadRequest("Status is null");
+            }
+            if (!db.Statuses.Any(x => x.Id == status.Id))
+            {
+                return BadRequest("Status not found");
+            }
+
+            Status originalStatus = await db.Statuses.FirstOrDefaultAsync(x => x.Id == status.Id);
+
+            StatusValidator.CheckStatusUpdate(status, originalStatus);
+            await db.SaveChangesAsync();
+            return Ok(originalStatus);
         }
 
         // DELETE: api/status/{id}
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteStatusById(int id)
         {
-var statusExists = _statusService.StatusExists(id);
-    if (!statusExists)
-    {
-        return NotFound();
-    }
-    _statusService.DeleteStatus(id);
-    return NoContent();
+            Status status = await db.Statuses.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (status == null)
+            {
+                return BadRequest("Status not found");
+            }
+
+            db.Statuses.Remove(status);
+            await db.SaveChangesAsync();
+            return Ok("Status deleted");
         }
     }
 }

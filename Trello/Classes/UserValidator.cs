@@ -2,7 +2,7 @@
 {
     public class UserValidator
     {
-        public static void checkUserUpdate(UserInfo userToUpdate, UserInfo originalUser)
+        public static void CheckUserUpdate(UserInfo userToUpdate, UserInfo originalUser)
         {
             if (userToUpdate.Username != null)
             {

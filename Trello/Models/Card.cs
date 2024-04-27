@@ -11,17 +11,17 @@ public partial class Card
 
     public string? Label { get; set; }
 
-    public DateOnly StartDate { get; set; }
+    public DateOnly? StartDate { get; set; }
 
-    public DateOnly Deadline { get; set; }
+    public DateOnly? Deadline { get; set; }
 
-    public long IdStatus { get; set; }
+    public long? IdStatus { get; set; }
 
-    public long IdBoard { get; set; }
+    public long? IdBoard { get; set; }
 
-    public virtual Board IdBoardNavigation { get; set; } = null!;
+    public virtual Board? IdBoardNavigation { get; set; } = null!;
 
-    public virtual Status IdStatusNavigation { get; set; } = null!;
+    public virtual Status? IdStatusNavigation { get; set; } = null!;
 
     public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();
 

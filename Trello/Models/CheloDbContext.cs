@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Trello;
 
-public partial class CheloDbTestContext : DbContext
+public partial class CheloDbContext : DbContext
 {
-    public CheloDbTestContext()
+    public CheloDbContext()
     {
     }
 
-    public CheloDbTestContext(DbContextOptions<CheloDbTestContext> options)
+    public CheloDbContext(DbContextOptions<CheloDbContext> options)
         : base(options)
     {
     }
@@ -33,7 +33,7 @@ public partial class CheloDbTestContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=chelo_db_test;Username=postgres;Password=root");
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=chelo_db;Username=postgres;Password=root");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -103,7 +103,7 @@ public partial class CheloDbTestContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.IdCard).HasColumnName("id_card");
-            entity.Property(e => e.Isactive).HasColumnName("isactive");
+            entity.Property(e => e.Iscompleted).HasColumnName("iscompleted");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasColumnName("title");
