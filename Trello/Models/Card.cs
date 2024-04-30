@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Trello;
 
@@ -18,12 +19,15 @@ public partial class Card
     public long? IdStatus { get; set; }
 
     public long? IdBoard { get; set; }
-
+    [JsonIgnore]
     public virtual Board? IdBoardNavigation { get; set; } = null!;
 
+    [JsonIgnore]
     public virtual Status? IdStatusNavigation { get; set; } = null!;
 
+    [JsonIgnore]
     public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();
 
+    [JsonIgnore]
     public virtual ICollection<UserCard> UserCards { get; set; } = new List<UserCard>();
 }
