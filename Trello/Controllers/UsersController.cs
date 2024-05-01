@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Trello.Classes;
+using Trello.Classes.DTO;
+using Trello.Models;
 
 namespace Trello.Controllers
 {
@@ -36,6 +38,12 @@ namespace Trello.Controllers
             if (user == null)
             {
                 return BadRequest("User is null");
+            }
+
+            string potentialError = UserValidator.IsUserAlreadyExists(db, user);
+            if (potentialError != null)
+            {
+                return BadRequest(potentialError);
             }
 
             await db.UserInfos.AddAsync(user);
@@ -76,6 +84,23 @@ namespace Trello.Controllers
             db.UserInfos.Remove(user);
             await db.SaveChangesAsync();
             return Ok("User deleted");
+        }
+
+        [HttpGet("auth")]
+        public async Task<ActionResult<UserDto>> Auth(UserInfo user)
+        {
+            string? potentialError = UserValidator.CheckUserAuth(db, user);
+
+            if (potentialError != null)
+            {
+                return BadRequest(potentialError);
+            }
+            else
+            {
+                UserInfo userInfo = await db.UserInfos.FirstOrDefaultAsync(x => x.Email.Equals(user.Email));
+                UserDto userDto = new UserDto() { Id = userInfo.Id, Email = userInfo.Email, UserName = userInfo.Username, Role = userInfo.Role };
+                return Ok(userDto);
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Trello;
+namespace Trello.Models;
 
 public partial class TeamUser
 {
@@ -11,10 +11,8 @@ public partial class TeamUser
     public long IdTeam { get; set; }
 
     public long IdUser { get; set; }
-
     [JsonIgnore]
-    public virtual Team? IdTeamNavigation { get; set; } = null!;
-
+    public virtual Team IdTeamNavigation { get; set; } = null!;
     [JsonIgnore]
-    public virtual UserInfo? IdUserNavigation { get; set; } = null!;
+    public virtual UserInfo IdUserNavigation { get; set; } = null!;
 }

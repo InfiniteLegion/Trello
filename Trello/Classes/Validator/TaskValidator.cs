@@ -2,7 +2,7 @@
 {
     public class TaskValidator
     {
-        public static void CheckTaskUpdate(Task taskToUpdate, Task originalTask)
+        public static void CheckTaskUpdate(Models.Task taskToUpdate, Models.Task originalTask)
         {
             if (taskToUpdate.Title != null)
             {

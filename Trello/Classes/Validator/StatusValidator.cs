@@ -1,8 +1,10 @@
-﻿namespace Trello.Classes
+﻿using Trello.Models;
+
+namespace Trello.Classes
 {
     public class StatusValidator
     {
-        public static void CheckStatusUpdate(Status statusToUpdate, Status originalStatus)
+        public static void CheckStatusUpdate(StatusColumn statusToUpdate, StatusColumn originalStatus)
         {
             if (statusToUpdate.Name != null)
             {

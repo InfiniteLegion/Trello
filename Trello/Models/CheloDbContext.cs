@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Trello;
+namespace Trello.Models;
 
 public partial class CheloDbContext : DbContext
 {
@@ -17,9 +17,11 @@ public partial class CheloDbContext : DbContext
 
     public virtual DbSet<Board> Boards { get; set; }
 
+    public virtual DbSet<BoardStatusColumn> BoardStatusColumns { get; set; }
+
     public virtual DbSet<Card> Cards { get; set; }
 
-    public virtual DbSet<Status> Statuses { get; set; }
+    public virtual DbSet<StatusColumn> StatusColumns { get; set; }
 
     public virtual DbSet<Task> Tasks { get; set; }
 
@@ -54,6 +56,25 @@ public partial class CheloDbContext : DbContext
                 .HasConstraintName("board_id_team_fkey");
         });
 
+        modelBuilder.Entity<BoardStatusColumn>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("board_status_column_pkey");
+
+            entity.ToTable("board_status_column");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdBoard).HasColumnName("id_board");
+            entity.Property(e => e.IdStatusColumn).HasColumnName("id_status_column");
+
+            entity.HasOne(d => d.IdBoardNavigation).WithMany(p => p.BoardStatusColumns)
+                .HasForeignKey(d => d.IdBoard)
+                .HasConstraintName("board_status_column_id_board_fkey");
+
+            entity.HasOne(d => d.IdStatusColumnNavigation).WithMany(p => p.BoardStatusColumns)
+                .HasForeignKey(d => d.IdStatusColumn)
+                .HasConstraintName("board_status_column_id_status_column_fkey");
+        });
+
         modelBuilder.Entity<Card>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("card_pkey");
@@ -74,22 +95,22 @@ public partial class CheloDbContext : DbContext
 
             entity.HasOne(d => d.IdBoardNavigation).WithMany(p => p.Cards)
                 .HasForeignKey(d => d.IdBoard)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("card_id_board_fkey");
 
             entity.HasOne(d => d.IdStatusNavigation).WithMany(p => p.Cards)
                 .HasForeignKey(d => d.IdStatus)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("card_id_status_fkey");
         });
 
-        modelBuilder.Entity<Status>(entity =>
+        modelBuilder.Entity<StatusColumn>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("status_pkey");
 
-            entity.ToTable("status");
+            entity.ToTable("status_column");
 
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("nextval('status_id_seq'::regclass)")
+                .HasColumnName("id");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");

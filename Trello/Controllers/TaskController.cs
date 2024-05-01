@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Trello.Classes;
+using Trello.Models;
 
 namespace Trello.Controllers
 {
@@ -14,9 +14,9 @@ namespace Trello.Controllers
         public TaskController(CheloDbContext db) { this.db = db; }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Task>> GetTaskById(int id)
+        public async Task<ActionResult<Models.Task>> GetTaskById(int id)
         {
-            Task task = await db.Tasks.FirstOrDefaultAsync(x => x.Id == id);
+            Models.Task task = await db.Tasks.FirstOrDefaultAsync(x => x.Id == id);
 
             if (task == null)
             {
@@ -27,7 +27,7 @@ namespace Trello.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Task>> AddNewTask(Task task)
+        public async Task<ActionResult<Models.Task>> AddNewTask(Models.Task task)
         {
             if (task == null)
             {
@@ -40,7 +40,7 @@ namespace Trello.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<Task>> UpdateTask(Task task)
+        public async Task<ActionResult<Models.Task>> UpdateTask(Models.Task task)
         {
             if (task == null)
             {
@@ -51,7 +51,7 @@ namespace Trello.Controllers
                 return BadRequest("Task not found");
             }
 
-            Task originalTask = await db.Tasks.FirstOrDefaultAsync(x=>x.Id== task.Id);
+            Models.Task originalTask = await db.Tasks.FirstOrDefaultAsync(x=>x.Id== task.Id);
 
             TaskValidator.CheckTaskUpdate(task, originalTask);
             await db.SaveChangesAsync();
@@ -61,7 +61,7 @@ namespace Trello.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteTaskById(int id)
         {
-            Task task = await db.Tasks.FirstOrDefaultAsync(x => x.Id == id);
+            Models.Task task = await db.Tasks.FirstOrDefaultAsync(x => x.Id == id);
 
             if (task == null)
             {
@@ -76,7 +76,7 @@ namespace Trello.Controllers
         [HttpGet("{id}/change-complete-status")]
         public async Task<ActionResult> ChangeTaskCompleteStatus(int id)
         {
-            Task task = await db.Tasks.FirstOrDefaultAsync(x => x.Id == id);
+            Models.Task task = await db.Tasks.FirstOrDefaultAsync(x => x.Id == id);
 
             if (task == null)
             {

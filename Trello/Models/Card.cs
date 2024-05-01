@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Trello;
+namespace Trello.Models;
 
 public partial class Card
 {
     public long Id { get; set; }
 
-    public string? Title { get; set; } = null!;
+    public string Title { get; set; } = null!;
 
     public string? Label { get; set; }
 
@@ -20,14 +20,11 @@ public partial class Card
 
     public long? IdBoard { get; set; }
     [JsonIgnore]
-    public virtual Board? IdBoardNavigation { get; set; } = null!;
-
+    public virtual Board? IdBoardNavigation { get; set; }
     [JsonIgnore]
-    public virtual Status? IdStatusNavigation { get; set; } = null!;
-
+    public virtual StatusColumn? IdStatusNavigation { get; set; }
     [JsonIgnore]
     public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();
-
     [JsonIgnore]
     public virtual ICollection<UserCard> UserCards { get; set; } = new List<UserCard>();
 }

@@ -4,13 +4,13 @@ using System.Text.Json.Serialization;
 
 namespace Trello.Models;
 
-public partial class Team
+public partial class StatusColumn
 {
     public long Id { get; set; }
 
     public string Name { get; set; } = null!;
     [JsonIgnore]
-    public virtual ICollection<Board> Boards { get; set; } = new List<Board>();
+    public virtual ICollection<BoardStatusColumn> BoardStatusColumns { get; set; } = new List<BoardStatusColumn>();
     [JsonIgnore]
-    public virtual ICollection<TeamUser> TeamUsers { get; set; } = new List<TeamUser>();
+    public virtual ICollection<Card> Cards { get; set; } = new List<Card>();
 }

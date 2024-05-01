@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Trello;
+namespace Trello.Models;
 
 public partial class UserCard
 {
@@ -13,7 +13,6 @@ public partial class UserCard
     public long IdCard { get; set; }
     [JsonIgnore]
     public virtual Card IdCardNavigation { get; set; } = null!;
-
     [JsonIgnore]
     public virtual UserInfo IdUserNavigation { get; set; } = null!;
 }

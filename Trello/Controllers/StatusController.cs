@@ -19,16 +19,16 @@ namespace Trello.Controllers
 
         // GET: api/status
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Status>>> GetAllStatuses()
+        public async Task<ActionResult<IEnumerable<StatusColumn>>> GetAllStatuses()
         {
-            return await db.Statuses.ToListAsync();
+            return await db.StatusColumns.ToListAsync();
         }
 
         // GET: api/status/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Status>> GetStatusById(int id)
+        public async Task<ActionResult<StatusColumn>> GetStatusById(int id)
         {
-            Status status = await db.Statuses.FirstOrDefaultAsync(x => x.Id == id);
+            StatusColumn status = await db.StatusColumns.FirstOrDefaultAsync(x => x.Id == id);
             if (status == null)
             {
                 return NotFound();
@@ -38,32 +38,32 @@ namespace Trello.Controllers
 
         // POST: api/status
         [HttpPost]
-        public async Task<ActionResult<Status>> AddStatus(Status status)
+        public async Task<ActionResult<StatusColumn>> AddStatus(StatusColumn status)
         {
             if (status == null)
             {
                 return BadRequest("Status is null");
             }
 
-            await db.Statuses.AddAsync(status);
+            await db.StatusColumns.AddAsync(status);
             await db.SaveChangesAsync();
             return Ok(status);
         }
 
         // PUT: api/status/
         [HttpPut]
-        public async Task<ActionResult<Status>> UpdateStatus(Status status)
+        public async Task<ActionResult<StatusColumn>> UpdateStatus(StatusColumn status)
         {
             if (status == null)
             {
                 return BadRequest("Status is null");
             }
-            if (!db.Statuses.Any(x => x.Id == status.Id))
+            if (!db.StatusColumns.Any(x => x.Id == status.Id))
             {
                 return BadRequest("Status not found");
             }
 
-            Status originalStatus = await db.Statuses.FirstOrDefaultAsync(x => x.Id == status.Id);
+            StatusColumn originalStatus = await db.StatusColumns.FirstOrDefaultAsync(x => x.Id == status.Id);
 
             StatusValidator.CheckStatusUpdate(status, originalStatus);
             await db.SaveChangesAsync();
@@ -74,14 +74,14 @@ namespace Trello.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteStatusById(int id)
         {
-            Status status = await db.Statuses.FirstOrDefaultAsync(x => x.Id == id);
+            StatusColumn status = await db.StatusColumns.FirstOrDefaultAsync(x => x.Id == id);
 
             if (status == null)
             {
                 return BadRequest("Status not found");
             }
 
-            db.Statuses.Remove(status);
+            db.StatusColumns.Remove(status);
             await db.SaveChangesAsync();
             return Ok("Status deleted");
         }

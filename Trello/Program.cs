@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Trello;
+using Trello.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

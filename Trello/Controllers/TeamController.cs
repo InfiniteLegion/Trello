@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Trello.Classes;
+using Trello.Models;
 
 namespace Trello.Controllers
 {

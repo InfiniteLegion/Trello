@@ -1,4 +1,6 @@
-﻿namespace Trello.Classes
+﻿using Trello.Models;
+
+namespace Trello.Classes
 {
     public class TeamValidator
     {
