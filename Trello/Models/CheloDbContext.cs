@@ -19,9 +19,15 @@ public partial class CheloDbContext : DbContext
 
     public virtual DbSet<BoardStatusColumn> BoardStatusColumns { get; set; }
 
+    public virtual DbSet<BoardTag> BoardTags { get; set; }
+
     public virtual DbSet<Card> Cards { get; set; }
 
+    public virtual DbSet<CardTag> CardTags { get; set; }
+
     public virtual DbSet<StatusColumn> StatusColumns { get; set; }
+
+    public virtual DbSet<Tag> Tags { get; set; }
 
     public virtual DbSet<Task> Tasks { get; set; }
 
@@ -35,7 +41,7 @@ public partial class CheloDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=chelo_db;Username=postgres;Password=admin");
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=chelo_db;Username=postgres;Password=root");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -75,6 +81,27 @@ public partial class CheloDbContext : DbContext
                 .HasConstraintName("board_status_column_id_status_column_fkey");
         });
 
+        modelBuilder.Entity<BoardTag>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("board_tags_pkey");
+
+            entity.ToTable("board_tags");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdBoard).HasColumnName("id_board");
+            entity.Property(e => e.IdTags).HasColumnName("id_tags");
+
+            entity.HasOne(d => d.IdBoardNavigation).WithMany(p => p.BoardTags)
+                .HasForeignKey(d => d.IdBoard)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("board_tags_id_board_fkey");
+
+            entity.HasOne(d => d.IdTagsNavigation).WithMany(p => p.BoardTags)
+                .HasForeignKey(d => d.IdTags)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("board_tags_id_tags_fkey");
+        });
+
         modelBuilder.Entity<Card>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("card_pkey");
@@ -102,6 +129,27 @@ public partial class CheloDbContext : DbContext
                 .HasConstraintName("card_id_status_fkey");
         });
 
+        modelBuilder.Entity<CardTag>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("card_tags_pkey");
+
+            entity.ToTable("card_tags");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdCard).HasColumnName("id_card");
+            entity.Property(e => e.IdTags).HasColumnName("id_tags");
+
+            entity.HasOne(d => d.IdCardNavigation).WithMany(p => p.CardTags)
+                .HasForeignKey(d => d.IdCard)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("card_tags_id_card_fkey");
+
+            entity.HasOne(d => d.IdTagsNavigation).WithMany(p => p.CardTags)
+                .HasForeignKey(d => d.IdTags)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("card_tags_id_tags_fkey");
+        });
+
         modelBuilder.Entity<StatusColumn>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("status_pkey");
@@ -113,6 +161,18 @@ public partial class CheloDbContext : DbContext
                 .HasColumnName("id");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<Tag>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("tags_pkey");
+
+            entity.ToTable("tags");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
                 .HasColumnName("name");
         });
 
@@ -155,6 +215,10 @@ public partial class CheloDbContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.IdTeam).HasColumnName("id_team");
             entity.Property(e => e.IdUser).HasColumnName("id_user");
+            entity.Property(e => e.Role)
+                .HasMaxLength(25)
+                .HasDefaultValueSql("'USER'::character varying")
+                .HasColumnName("role");
 
             entity.HasOne(d => d.IdTeamNavigation).WithMany(p => p.TeamUsers)
                 .HasForeignKey(d => d.IdTeam)
@@ -200,12 +264,12 @@ public partial class CheloDbContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .HasColumnName("email");
+            entity.Property(e => e.Guid)
+                .HasMaxLength(55)
+                .HasColumnName("guid");
             entity.Property(e => e.Password)
                 .HasMaxLength(50)
                 .HasColumnName("password");
-            entity.Property(e => e.Role)
-                .HasMaxLength(50)
-                .HasColumnName("role");
             entity.Property(e => e.Username)
                 .HasMaxLength(255)
                 .HasColumnName("username");

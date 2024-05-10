@@ -21,10 +21,10 @@ namespace Trello.Controllers
         }
 
         // GET /users/5  5 - приклад id користувача
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserInfo>> GetUserById(int id)
+        [HttpGet("{guid}")]
+        public async Task<ActionResult<UserInfo>> GetUserByGuid(string guid)
         {
-            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == id);
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(guid));
             if (user == null)
             {
                 return BadRequest("User not found");
@@ -46,6 +46,8 @@ namespace Trello.Controllers
                 return BadRequest(potentialError);
             }
 
+            user.Guid = Guid.NewGuid().ToString();
+
             await db.UserInfos.AddAsync(user);
             await db.SaveChangesAsync();
             return Ok(user);
@@ -59,22 +61,22 @@ namespace Trello.Controllers
                 return BadRequest("User is null");
             }
 
-            if (!db.UserInfos.Any(x => x.Id == user.Id))
+            if (!db.UserInfos.Any(x => x.Guid.Equals(user.Guid)))
             {
                 return BadRequest("User not found");
             }
 
-            UserInfo originalUser = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == user.Id);
+            UserInfo originalUser = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(user.Guid));
             
             UserValidator.CheckUserUpdate(user, originalUser);
             await db.SaveChangesAsync();
             return Ok(originalUser);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteUserById(int id)
+        [HttpDelete("{guid}")]
+        public async Task<ActionResult> DeleteUserByGuid(string guid)
         {
-            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == id);
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(guid));
 
             if (user == null)
             {
@@ -98,7 +100,7 @@ namespace Trello.Controllers
             else
             {
                 UserInfo userInfo = await db.UserInfos.FirstOrDefaultAsync(x => x.Email.Equals(user.Email));
-                UserDto userDto = new UserDto() { Id = userInfo.Id, Email = userInfo.Email, UserName = userInfo.Username, Role = userInfo.Role };
+                UserDto userDto = new UserDto() { Email = userInfo.Email, UserName = userInfo.Username, Guid = userInfo.Guid };
                 return Ok(userDto);
             }
         }

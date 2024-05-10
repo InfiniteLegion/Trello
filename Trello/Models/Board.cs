@@ -14,6 +14,8 @@ public partial class Board
     [JsonIgnore]
     public virtual ICollection<BoardStatusColumn> BoardStatusColumns { get; set; } = new List<BoardStatusColumn>();
     [JsonIgnore]
+    public virtual ICollection<BoardTag> BoardTags { get; set; } = new List<BoardTag>();
+    [JsonIgnore]
     public virtual ICollection<Card> Cards { get; set; } = new List<Card>();
     [JsonIgnore]
     public virtual Team? IdTeamNavigation { get; set; }
