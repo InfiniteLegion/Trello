@@ -6,6 +6,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy(name: "_myAllowSpecificOrigins",
+					  builder =>
+					  {
+						  builder.WithOrigins("http://127.0.0.1:5500")
+						  .AllowAnyMethod()
+						  .AllowAnyHeader(); 
+					  });
+});
 
 string connectionTest = "Host=localhost;Port=5432;Database=chelo_db;Username=postgres;Password=root";
 builder.Services.AddDbContext<CheloDbContext>(o => o.UseNpgsql(connectionTest));
@@ -25,6 +35,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors("_myAllowSpecificOrigins");
 
 app.UseAuthorization();
 
