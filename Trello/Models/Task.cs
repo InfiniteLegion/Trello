@@ -13,6 +13,7 @@ public partial class Task
     public bool? Iscompleted { get; set; }
 
     public long? IdCard { get; set; }
+
     [JsonIgnore]
     public virtual Card? IdCardNavigation { get; set; }
 }

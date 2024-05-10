@@ -4,17 +4,17 @@ using System.Text.Json.Serialization;
 
 namespace Trello.Models;
 
-public partial class UserCard
+public partial class CardTag
 {
     public long Id { get; set; }
 
-    public long IdUser { get; set; }
-
     public long IdCard { get; set; }
+
+    public long IdTags { get; set; }
 
     [JsonIgnore]
     public virtual Card IdCardNavigation { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual UserInfo IdUserNavigation { get; set; } = null!;
+    public virtual Tag IdTagsNavigation { get; set; } = null!;
 }
