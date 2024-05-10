@@ -48,6 +48,10 @@ namespace Trello.Classes
         {
             UserInfo? optionalUser = db.UserInfos.FirstOrDefault(x => x.Email.Equals(user.Email));
 
+            if(optionalUser == null) {
+				optionalUser = db.UserInfos.FirstOrDefault(x => x.Username.Equals(user.Username));
+			}
+
             if (optionalUser == null)
             {
                 return "Wrong email or user doesn't exists";
