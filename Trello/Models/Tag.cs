@@ -10,9 +10,9 @@ public partial class Tag
 
     public string? Name { get; set; }
 
-    [JsonIgnore]
-    public virtual ICollection<BoardTag> BoardTags { get; set; } = new List<BoardTag>();
-
+    public long? IdBoard { get; set; }
     [JsonIgnore]
     public virtual ICollection<CardTag> CardTags { get; set; } = new List<CardTag>();
+    [JsonIgnore]
+    public virtual Board? IdBoardNavigation { get; set; }
 }

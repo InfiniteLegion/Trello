@@ -15,6 +15,7 @@ namespace Trello.Controllers
         private CheloDbContext db;
 
         public TagController(CheloDbContext db) { this.db = db; }
+
         [HttpPut]
         public async Task<ActionResult<Tag>> UpdateTag(Tag tag)
         {
@@ -31,19 +32,33 @@ namespace Trello.Controllers
             await db.SaveChangesAsync();
             return Ok(tag);
         }
-        
-        //[HttpPost]
-        //public async Task<ActionResult<Tag>> CreateTag(Tag tag)
-        //{
 
-        //    if (tag == null)
-        //    {
-        //        return BadRequest("Tag is null");
-        //    }
+        [HttpPost]
+        public async Task<ActionResult<Tag>> CreateTag(Tag tag)
+        {
+            if (tag == null)
+            {
+                return BadRequest("Tag is null");
+            }
 
-        //    await db.Tags.AddAsync(tag);
-        //    await db.SaveChangesAsync();
-        //    return Ok(tag);
-        //}
+            await db.Tags.AddAsync(tag);
+            await db.SaveChangesAsync();
+            return Ok(tag);
+        }
+
+        [HttpDelete("tag={id}")]
+        public async Task<ActionResult> DeleteTagById(int id)
+        {
+            Tag tag = await db.Tags.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (tag == null)
+            {
+                return BadRequest("Tag not found");
+            }
+
+            db.Tags.Remove(tag);
+            await db.SaveChangesAsync();
+            return Ok("Tag deleted");
+        }
     }
 }

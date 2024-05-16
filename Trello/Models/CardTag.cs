@@ -11,10 +11,8 @@ public partial class CardTag
     public long IdCard { get; set; }
 
     public long IdTags { get; set; }
-
     [JsonIgnore]
-    public virtual Card IdCardNavigation { get; set; } = null!;
-
+    public virtual Card? IdCardNavigation { get; set; }
     [JsonIgnore]
-    public virtual Tag IdTagsNavigation { get; set; } = null!;
+    public virtual Tag? IdTagsNavigation { get; set; }
 }

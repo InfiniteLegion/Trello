@@ -10,6 +10,10 @@ namespace Trello.Classes
             {
                 originalStatus.Name = statusToUpdate.Name;
             }
+            if (statusToUpdate.IdBoard != null)
+            {
+                originalStatus.IdBoard = statusToUpdate.IdBoard;
+            }
         }
     }
 }

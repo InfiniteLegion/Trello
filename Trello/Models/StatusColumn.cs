@@ -10,9 +10,9 @@ public partial class StatusColumn
 
     public string Name { get; set; } = null!;
 
-    [JsonIgnore]
-    public virtual ICollection<BoardStatusColumn> BoardStatusColumns { get; set; } = new List<BoardStatusColumn>();
-
+    public long? IdBoard { get; set; }
     [JsonIgnore]
     public virtual ICollection<Card> Cards { get; set; } = new List<Card>();
+    [JsonIgnore]
+    public virtual Board? IdBoardNavigation { get; set; }
 }

@@ -13,10 +13,8 @@ public partial class TeamUser
     public long IdUser { get; set; }
 
     public string? Role { get; set; }
-
     [JsonIgnore]
-    public virtual Team IdTeamNavigation { get; set; } = null!;
-
+    public virtual Team? IdTeamNavigation { get; set; }
     [JsonIgnore]
-    public virtual UserInfo IdUserNavigation { get; set; } = null!;
+    public virtual UserInfo? IdUserNavigation { get; set; }
 }
