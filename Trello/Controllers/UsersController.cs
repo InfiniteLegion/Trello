@@ -88,7 +88,7 @@ namespace Trello.Controllers
             return Ok("User deleted");
         }
 
-        [HttpGet("auth")]
+        [HttpPost("auth")]
         public async Task<ActionResult<UserDto>> Auth(UserInfo user)
         {
             string? potentialError = UserValidator.CheckUserAuth(db, user);
@@ -99,7 +99,17 @@ namespace Trello.Controllers
             }
             else
             {
-                UserInfo userInfo = await db.UserInfos.FirstOrDefaultAsync(x => x.Email.Equals(user.Email));
+                UserInfo userInfo;
+
+                if (user.Email == String.Empty || user.Email == "" || user.Email == null)
+                {
+                    userInfo = await db.UserInfos.FirstOrDefaultAsync(x => x.Username.Equals(user.Username));
+                }
+                else
+                {
+					userInfo = await db.UserInfos.FirstOrDefaultAsync(x => x.Email.Equals(user.Email));
+				}
+
                 UserDto userDto = new UserDto() { Email = userInfo.Email, UserName = userInfo.Username, Guid = userInfo.Guid };
                 return Ok(userDto);
             }
