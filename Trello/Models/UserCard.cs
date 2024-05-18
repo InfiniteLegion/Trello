@@ -11,10 +11,8 @@ public partial class UserCard
     public long IdUser { get; set; }
 
     public long IdCard { get; set; }
-
     [JsonIgnore]
-    public virtual Card IdCardNavigation { get; set; } = null!;
-
+    public virtual Card? IdCardNavigation { get; set; }
     [JsonIgnore]
-    public virtual UserInfo IdUserNavigation { get; set; } = null!;
+    public virtual UserInfo? IdUserNavigation { get; set; }
 }

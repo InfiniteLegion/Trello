@@ -87,9 +87,29 @@ namespace Trello.Controllers
                 return BadRequest("Card not found");
             }
 
-            var tasks = await db.Tasks.Where(x=>x.IdCard == cardId).ToListAsync();
+            var tasks = await db.Tasks.Where(x => x.IdCard == cardId).ToListAsync();
 
             return tasks;
+        }
+
+        [HttpGet("{cardId}/tags")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllCardTags(int cardId)
+        {
+            Card card = await db.Cards.FirstOrDefaultAsync(x => x.Id == cardId);
+
+            if (card == null)
+            {
+                return BadRequest("Card not found");
+            }
+
+            var cardTags = await db.CardTags.Where(x => x.IdCard == cardId).ToListAsync();
+            var tags = new List<Tag>();
+            foreach (var item in cardTags)
+            {
+                tags.Add(await db.Tags.FirstOrDefaultAsync(x => x.Id == item.IdTags));
+            }
+
+            return tags;
         }
     }
 }

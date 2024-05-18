@@ -10,10 +10,9 @@ public partial class Task
 
     public string Title { get; set; } = null!;
 
-    public bool? Iscompleted { get; set; }
+    public bool? Iscompleted { get; set; } = false;
 
     public long? IdCard { get; set; }
-
     [JsonIgnore]
     public virtual Card? IdCardNavigation { get; set; }
 }

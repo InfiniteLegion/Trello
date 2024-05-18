@@ -86,5 +86,20 @@ namespace Trello.Controllers
 
             return cards;
         }
+
+        [HttpGet("{boardId}/tags")]
+        public async Task<ActionResult<IEnumerable<Tag>>> GetAllBoardTags(int boardId)
+        {
+            Board board = await db.Boards.FirstOrDefaultAsync(x => x.Id == boardId);
+
+            if (board == null)
+            {
+                return BadRequest("Board not found");
+            }
+
+            var tags = await db.Tags.Where(x => x.IdBoard == boardId).ToListAsync();
+
+            return tags;
+        }
     }
 }

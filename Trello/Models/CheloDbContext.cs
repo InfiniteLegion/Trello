@@ -17,10 +17,6 @@ public partial class CheloDbContext : DbContext
 
     public virtual DbSet<Board> Boards { get; set; }
 
-    public virtual DbSet<BoardStatusColumn> BoardStatusColumns { get; set; }
-
-    public virtual DbSet<BoardTag> BoardTags { get; set; }
-
     public virtual DbSet<Card> Cards { get; set; }
 
     public virtual DbSet<CardTag> CardTags { get; set; }
@@ -60,46 +56,6 @@ public partial class CheloDbContext : DbContext
             entity.HasOne(d => d.IdTeamNavigation).WithMany(p => p.Boards)
                 .HasForeignKey(d => d.IdTeam)
                 .HasConstraintName("board_id_team_fkey");
-        });
-
-        modelBuilder.Entity<BoardStatusColumn>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("board_status_column_pkey");
-
-            entity.ToTable("board_status_column");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.IdBoard).HasColumnName("id_board");
-            entity.Property(e => e.IdStatusColumn).HasColumnName("id_status_column");
-
-            entity.HasOne(d => d.IdBoardNavigation).WithMany(p => p.BoardStatusColumns)
-                .HasForeignKey(d => d.IdBoard)
-                .HasConstraintName("board_status_column_id_board_fkey");
-
-            entity.HasOne(d => d.IdStatusColumnNavigation).WithMany(p => p.BoardStatusColumns)
-                .HasForeignKey(d => d.IdStatusColumn)
-                .HasConstraintName("board_status_column_id_status_column_fkey");
-        });
-
-        modelBuilder.Entity<BoardTag>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("board_tags_pkey");
-
-            entity.ToTable("board_tags");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.IdBoard).HasColumnName("id_board");
-            entity.Property(e => e.IdTags).HasColumnName("id_tags");
-
-            entity.HasOne(d => d.IdBoardNavigation).WithMany(p => p.BoardTags)
-                .HasForeignKey(d => d.IdBoard)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("board_tags_id_board_fkey");
-
-            entity.HasOne(d => d.IdTagsNavigation).WithMany(p => p.BoardTags)
-                .HasForeignKey(d => d.IdTags)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("board_tags_id_tags_fkey");
         });
 
         modelBuilder.Entity<Card>(entity =>
@@ -159,9 +115,14 @@ public partial class CheloDbContext : DbContext
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("nextval('status_id_seq'::regclass)")
                 .HasColumnName("id");
+            entity.Property(e => e.IdBoard).HasColumnName("id_board");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
+
+            entity.HasOne(d => d.IdBoardNavigation).WithMany(p => p.StatusColumns)
+                .HasForeignKey(d => d.IdBoard)
+                .HasConstraintName("status_column_id_board_fkey");
         });
 
         modelBuilder.Entity<Tag>(entity =>
@@ -171,9 +132,14 @@ public partial class CheloDbContext : DbContext
             entity.ToTable("tags");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdBoard).HasColumnName("id_board");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+
+            entity.HasOne(d => d.IdBoardNavigation).WithMany(p => p.Tags)
+                .HasForeignKey(d => d.IdBoard)
+                .HasConstraintName("tags_id_board_fkey");
         });
 
         modelBuilder.Entity<Task>(entity =>

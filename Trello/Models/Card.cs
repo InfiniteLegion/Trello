@@ -19,19 +19,14 @@ public partial class Card
     public long? IdStatus { get; set; }
 
     public long? IdBoard { get; set; }
-
     [JsonIgnore]
     public virtual ICollection<CardTag> CardTags { get; set; } = new List<CardTag>();
-
     [JsonIgnore]
     public virtual Board? IdBoardNavigation { get; set; }
-
     [JsonIgnore]
     public virtual StatusColumn? IdStatusNavigation { get; set; }
-
     [JsonIgnore]
     public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();
-
     [JsonIgnore]
     public virtual ICollection<UserCard> UserCards { get; set; } = new List<UserCard>();
 }
