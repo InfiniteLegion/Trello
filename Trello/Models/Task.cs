@@ -8,9 +8,9 @@ public partial class Task
 {
     public long Id { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; }
 
-    public bool? Iscompleted { get; set; } = false;
+    public bool? Iscompleted { get; set; }
 
     public long? IdCard { get; set; }
     [JsonIgnore]

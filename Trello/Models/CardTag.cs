@@ -8,9 +8,9 @@ public partial class CardTag
 {
     public long Id { get; set; }
 
-    public long IdCard { get; set; }
+    public long? IdCard { get; set; }
 
-    public long IdTags { get; set; }
+    public long? IdTags { get; set; }
     [JsonIgnore]
     public virtual Card? IdCardNavigation { get; set; }
     [JsonIgnore]

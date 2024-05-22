@@ -8,7 +8,7 @@ public partial class Card
 {
     public long Id { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; }
 
     public string? Label { get; set; }
 
@@ -19,6 +19,8 @@ public partial class Card
     public long? IdStatus { get; set; }
 
     public long? IdBoard { get; set; }
+    [JsonIgnore]
+    public virtual ICollection<CardComment> CardComments { get; set; } = new List<CardComment>();
     [JsonIgnore]
     public virtual ICollection<CardTag> CardTags { get; set; } = new List<CardTag>();
     [JsonIgnore]

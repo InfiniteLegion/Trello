@@ -8,7 +8,7 @@ public partial class Team
 {
     public long Id { get; set; }
 
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
     [JsonIgnore]
     public virtual ICollection<Board> Boards { get; set; } = new List<Board>();
     [JsonIgnore]

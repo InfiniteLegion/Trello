@@ -8,9 +8,9 @@ public partial class TeamUser
 {
     public long Id { get; set; }
 
-    public long IdTeam { get; set; }
+    public long? IdTeam { get; set; }
 
-    public long IdUser { get; set; }
+    public long? IdUser { get; set; }
 
     public string? Role { get; set; }
     [JsonIgnore]

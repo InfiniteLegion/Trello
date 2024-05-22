@@ -19,6 +19,8 @@ public partial class CheloDbContext : DbContext
 
     public virtual DbSet<Card> Cards { get; set; }
 
+    public virtual DbSet<CardComment> CardComments { get; set; }
+
     public virtual DbSet<CardTag> CardTags { get; set; }
 
     public virtual DbSet<StatusColumn> StatusColumns { get; set; }
@@ -85,6 +87,29 @@ public partial class CheloDbContext : DbContext
                 .HasConstraintName("card_id_status_fkey");
         });
 
+        modelBuilder.Entity<CardComment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("card_comment_pkey");
+
+            entity.ToTable("card_comment");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CommentDatetime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("comment_datetime");
+            entity.Property(e => e.CommentText).HasColumnName("comment_text");
+            entity.Property(e => e.IdCard).HasColumnName("id_card");
+            entity.Property(e => e.IdUser).HasColumnName("id_user");
+
+            entity.HasOne(d => d.IdCardNavigation).WithMany(p => p.CardComments)
+                .HasForeignKey(d => d.IdCard)
+                .HasConstraintName("card_comment_id_card_fkey");
+
+            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.CardComments)
+                .HasForeignKey(d => d.IdUser)
+                .HasConstraintName("card_comment_id_user_fkey");
+        });
+
         modelBuilder.Entity<CardTag>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("card_tags_pkey");
@@ -97,12 +122,10 @@ public partial class CheloDbContext : DbContext
 
             entity.HasOne(d => d.IdCardNavigation).WithMany(p => p.CardTags)
                 .HasForeignKey(d => d.IdCard)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("card_tags_id_card_fkey");
 
             entity.HasOne(d => d.IdTagsNavigation).WithMany(p => p.CardTags)
                 .HasForeignKey(d => d.IdTags)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("card_tags_id_tags_fkey");
         });
 
@@ -150,7 +173,9 @@ public partial class CheloDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.IdCard).HasColumnName("id_card");
-            entity.Property(e => e.Iscompleted).HasColumnName("iscompleted");
+            entity.Property(e => e.Iscompleted)
+                .HasDefaultValue(false)
+                .HasColumnName("iscompleted");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasColumnName("title");
@@ -188,12 +213,10 @@ public partial class CheloDbContext : DbContext
 
             entity.HasOne(d => d.IdTeamNavigation).WithMany(p => p.TeamUsers)
                 .HasForeignKey(d => d.IdTeam)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("team_user_id_team_fkey");
 
             entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.TeamUsers)
                 .HasForeignKey(d => d.IdUser)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("team_user_id_user_fkey");
         });
 
@@ -209,12 +232,10 @@ public partial class CheloDbContext : DbContext
 
             entity.HasOne(d => d.IdCardNavigation).WithMany(p => p.UserCards)
                 .HasForeignKey(d => d.IdCard)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("user_card_id_card_fkey");
 
             entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.UserCards)
                 .HasForeignKey(d => d.IdUser)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("user_card_id_user_fkey");
         });
 
