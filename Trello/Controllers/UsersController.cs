@@ -142,7 +142,11 @@ namespace Trello.Controllers
             var boards = new List<Board>();
             foreach (var item in teams)
             {
-                boards.Add(await db.Boards.FirstOrDefaultAsync(x => x.IdTeam == item.Id));
+                var teamBoards = await db.Boards.Where(x => x.IdTeam == item.Id).ToListAsync();
+                foreach (var it in teamBoards)
+                {
+                    boards.Add(it);
+                }
             }
 
             return boards;
