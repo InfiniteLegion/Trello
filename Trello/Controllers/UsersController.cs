@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Trello.Classes;
 using Trello.Classes.DTO;
+using Trello.Classes.Mapper;
 using Trello.Models;
 
 namespace Trello.Controllers
@@ -11,8 +12,13 @@ namespace Trello.Controllers
     public class UsersController : ControllerBase
     {
         private CheloDbContext db;
+        private readonly UserMapper mapper;
 
-        public UsersController(CheloDbContext db) {  this.db = db; }
+        public UsersController(CheloDbContext db, UserMapper mapper) 
+        {  
+            this.db = db; 
+            this.mapper = mapper;
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserInfo>>> GetAllUsers()
@@ -22,14 +28,16 @@ namespace Trello.Controllers
 
         // GET /users/5  5 - приклад id користувача
         [HttpGet("{guid}")]
-        public async Task<ActionResult<UserInfo>> GetUserByGuid(string guid)
+        public async Task<ActionResult<UserDto>> GetUserByGuid(string guid)
         {
             UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(guid));
             if (user == null)
             {
                 return BadRequest("User not found");
             }
-            return new ObjectResult(user);
+
+            UserDto userDto = await mapper.ToDTO(user);
+            return new ObjectResult(userDto);
         }
 
         [HttpPost]

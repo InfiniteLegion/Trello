@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Trello.Classes;
+using Trello.Classes.DTO;
+using Trello.Classes.Mapper;
 using Trello.Models;
 
 namespace Trello.Controllers
@@ -10,8 +12,13 @@ namespace Trello.Controllers
     public class CardController : Controller
     {
         private CheloDbContext db;
+        private readonly CardMapper cardMapper;
 
-        public CardController(CheloDbContext db) { this.db = db; }
+        public CardController(CheloDbContext db, CardMapper cardMapper) 
+        { 
+            this.db = db;
+            this.cardMapper = cardMapper;
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Card>>> GetAllCards()
@@ -20,14 +27,16 @@ namespace Trello.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Card>> GetCardById(int id)
+        public async Task<ActionResult<CardDTO>> GetCardById(int id)
         {
             Card card = await db.Cards.FirstOrDefaultAsync(x => x.Id == id);
             if (card == null)
             {
                 return BadRequest("Card not found");
             }
-            return new ObjectResult(card);
+
+            CardDTO cardDTO = await cardMapper.ToDTO(card);
+            return new ObjectResult(cardDTO);
         }
 
         [HttpPost]
@@ -110,6 +119,21 @@ namespace Trello.Controllers
             }
 
             return tags;
+        }
+
+        [HttpGet("{cardId}/comments")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllCardComments(int cardId)
+        {
+            Card card = await db.Cards.FirstOrDefaultAsync(x => x.Id == cardId);
+
+            if (card == null)
+            {
+                return BadRequest("Card not found");
+            }
+
+            var comments = await db.CardComments.Where(x => x.IdCard == cardId).ToListAsync();
+
+            return comments;
         }
     }
 }
