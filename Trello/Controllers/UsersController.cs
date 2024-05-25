@@ -114,5 +114,26 @@ namespace Trello.Controllers
                 return Ok(userDto);
             }
         }
+        [HttpGet("boards/{userId}")]
+        public ActionResult<IEnumerable<Board>> GetUserBoards(int userId)
+        {
+            var userBoards = db.UserCards
+                .Where(uc => uc.IdUser == userId)
+                .Select(uc => uc.IdCard)
+                .Distinct() 
+                .ToList();
+
+            var boards = db.Cards
+                .Where(c => userBoards.Contains(c.Id))
+                .Select(c => c.IdBoard)
+                .Distinct() 
+                .ToList();
+
+            var userBoardDetails = db.Boards
+                .Where(b => boards.Contains(b.Id))
+                .ToList();
+
+            return userBoardDetails;
+        }
     }
 }
