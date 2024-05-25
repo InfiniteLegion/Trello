@@ -122,26 +122,30 @@ namespace Trello.Controllers
                 return Ok(userDto);
             }
         }
-        [HttpGet("boards/{userId}")]
-        public ActionResult<IEnumerable<Board>> GetUserBoards(int userId)
+        [HttpGet("boards/{userGuid}")]
+        public async Task<ActionResult<IEnumerable<Board>>> GetUserBoards(string userGuid)
         {
-            var userBoards = db.UserCards
-                .Where(uc => uc.IdUser == userId)
-                .Select(uc => uc.IdCard)
-                .Distinct() 
-                .ToList();
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x=>x.Guid.Equals(userGuid));
 
-            var boards = db.Cards
-                .Where(c => userBoards.Contains(c.Id))
-                .Select(c => c.IdBoard)
-                .Distinct() 
-                .ToList();
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
 
-            var userBoardDetails = db.Boards
-                .Where(b => boards.Contains(b.Id))
-                .ToList();
+            var teamUser = await db.TeamUsers.Where(x => x.IdUser == user.Id).ToListAsync();
+            var teams = new List<Team>();
+            foreach (var item in teamUser)
+            {
+                teams.Add(await db.Teams.FirstOrDefaultAsync(x => x.Id == item.IdTeam));
+            }
 
-            return userBoardDetails;
+            var boards = new List<Board>();
+            foreach (var item in teams)
+            {
+                boards.Add(await db.Boards.FirstOrDefaultAsync(x => x.IdTeam == item.Id));
+            }
+
+            return boards;
         }
     }
 }
