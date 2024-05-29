@@ -101,5 +101,21 @@ namespace Trello.Controllers
 
             return tags;
         }
+
+        [HttpGet("{boardId}/statuscolumns")]
+        public ActionResult<IEnumerable<StatusColumn>> GetStatusColumns(int boardId)
+        {
+            var board = db.Boards.Find(boardId);
+            if (board == null)
+            {
+                return NotFound(new { message = "Board not found" });
+            }
+
+            var statusColumns = db.StatusColumns
+                .Where(sc => sc.IdBoard == boardId)
+                .ToList();
+
+            return statusColumns;
+        }
     }
 }
