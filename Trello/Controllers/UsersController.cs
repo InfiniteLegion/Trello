@@ -151,5 +151,25 @@ namespace Trello.Controllers
 
             return boards;
         }
+
+        [HttpGet("teams/{userGuid}")]
+        public async Task<ActionResult<IEnumerable<Team>>> GetUserTeams(string userGuid)
+        {
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            var teamUsers = await db.TeamUsers.Where(x => x.IdUser == user.Id).ToListAsync();
+            var teams = new List<Team>();
+            foreach (var item in teamUsers)
+            {
+                teams.Add(await db.Teams.FirstOrDefaultAsync(x => x.Id == item.IdTeam));
+            }
+
+            return teams;
+        }
     }
 }

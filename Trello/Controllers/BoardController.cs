@@ -101,18 +101,17 @@ namespace Trello.Controllers
 
             return tags;
         }
-        [HttpGet("{boardId}/statuscolumns")]
-        public ActionResult<IEnumerable<StatusColumn>> GetStatusColumns(int boardId)
+        [HttpGet("{boardId}/status-columns")]
+        public async Task<ActionResult<IEnumerable<StatusColumn>>> GetStatusColumns(int boardId)
         {
-            var board = db.Boards.Find(boardId);
+            Board board = await db.Boards.FirstOrDefaultAsync(x => x.Id == boardId);
+
             if (board == null)
             {
-                return NotFound(new { message = "Board not found" });
+                return BadRequest("Board not found");
             }
 
-            var statusColumns = db.StatusColumns
-                .Where(sc => sc.IdBoard == boardId)
-                .ToList();
+            var statusColumns = await db.StatusColumns.Where(x => x.IdBoard == board.Id).ToListAsync();
 
             return statusColumns;
         }
