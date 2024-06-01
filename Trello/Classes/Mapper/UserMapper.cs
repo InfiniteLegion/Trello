@@ -9,9 +9,9 @@ namespace Trello.Classes.Mapper
 
         public UserMapper(CheloDbContext db) { this.db = db; }
 
-        public async Task<UserDto> ToDTO(UserInfo user)
+        public async Task<UserDTO> ToDTO(UserInfo user)
         {
-            return new UserDto()
+            return new UserDTO()
             {
                 UserName = user.Username,
                 Email = user.Email,

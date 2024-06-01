@@ -5,7 +5,7 @@ namespace Trello.Classes.Mapper
 {
     public class TagMapper
     {
-        public static TagDTO ToDTO(Tag tag)
+        public async Task<TagDTO> ToDTO(Tag tag)
         {
             return new TagDTO()
             {

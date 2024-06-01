@@ -5,7 +5,7 @@ namespace Trello.Classes.Mapper
 {
     public class StatusColumnMapper
     {
-        public static StatusColumnDTO ToDTO(StatusColumn statusColumn)
+        public async Task<StatusColumnDTO> ToDTO(StatusColumn statusColumn)
         {
             return new StatusColumnDTO()
             {

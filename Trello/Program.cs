@@ -21,8 +21,12 @@ builder.Services.AddCors(options =>
 string connectionTest = "Host=localhost;Port=5432;Database=chelo_db;Username=postgres;Password=root";
 builder.Services.AddDbContext<CheloDbContext>(o => o.UseNpgsql(connectionTest));
 
+builder.Services.AddScoped<BoardMapper>();
 builder.Services.AddScoped<CardMapper>();
 builder.Services.AddScoped<CommentMapper>();
+builder.Services.AddScoped<StatusColumnMapper>();
+builder.Services.AddScoped<TagMapper>();
+builder.Services.AddScoped<TaskMapper>();
 builder.Services.AddScoped<UserMapper>();
 
 var app = builder.Build();

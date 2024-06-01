@@ -12,6 +12,6 @@ namespace Trello.Classes.DTO
 
         public long? IdCard { get; set; }
 
-        public UserDto? User { get; set; }
+        public UserDTO? User { get; set; }
     }
 }

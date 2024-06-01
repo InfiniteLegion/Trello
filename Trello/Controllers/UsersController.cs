@@ -27,8 +27,8 @@ namespace Trello.Controllers
         }
 
         // GET /users/5  5 - приклад id користувача
-        [HttpGet("{guid}")]
-        public async Task<ActionResult<UserDto>> GetUserByGuid(string guid)
+        [HttpGet("guid={guid}")]
+        public async Task<ActionResult<UserDTO>> GetUserByGuid(string guid)
         {
             UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(guid));
             if (user == null)
@@ -36,8 +36,22 @@ namespace Trello.Controllers
                 return BadRequest("User not found");
             }
 
-            UserDto userDto = await mapper.ToDTO(user);
+            UserDTO userDto = await mapper.ToDTO(user);
             return new ObjectResult(userDto);
+        }
+
+        [HttpGet("username={username}")]
+        public async Task<ActionResult<UserDTO>> GetUserByUsername(string username)
+        {
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Username.Equals(username));
+
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            UserDTO userDTO = await mapper.ToDTO(user);
+            return new ObjectResult(userDTO);
         }
 
         [HttpPost]
@@ -97,7 +111,7 @@ namespace Trello.Controllers
         }
 
         [HttpPost("auth")]
-        public async Task<ActionResult<UserDto>> Auth(UserInfo user)
+        public async Task<ActionResult<UserDTO>> Auth(UserInfo user)
         {
             string? potentialError = UserValidator.CheckUserAuth(db, user);
 
@@ -118,7 +132,7 @@ namespace Trello.Controllers
 					userInfo = await db.UserInfos.FirstOrDefaultAsync(x => x.Email.Equals(user.Email));
 				}
 
-                UserDto userDto = new UserDto() { Email = userInfo.Email, UserName = userInfo.Username, Guid = userInfo.Guid };
+                UserDTO userDto = new UserDTO() { Email = userInfo.Email, UserName = userInfo.Username, Guid = userInfo.Guid };
                 return Ok(userDto);
             }
         }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Trello.Classes.DTO;
+using Trello.Classes.Mapper;
 using Trello.Classes.Validator;
 using Trello.Models;
 
@@ -11,18 +13,26 @@ namespace Trello.Controllers
     public class BoardController : ControllerBase
     {
         private CheloDbContext db;
+        private readonly BoardMapper boardMapper;
 
-        public BoardController(CheloDbContext db) { this.db = db; }
+        public BoardController(CheloDbContext db, BoardMapper boardMapper) 
+        {
+            this.db = db; 
+            this.boardMapper = boardMapper;
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Board>> GetBoardById(int id)
+        public async Task<ActionResult<BoardDTO>> GetBoardById(int id)
         {
             Board board = await db.Boards.FirstOrDefaultAsync(x => x.Id == id);
             if (board == null)
             {
                 return BadRequest("Board not found");
             }
-            return new ObjectResult(board);
+
+            BoardDTO boardDTO = await boardMapper.ToDTO(board);
+
+            return new ObjectResult(boardDTO);
         }
 
         [HttpPost]

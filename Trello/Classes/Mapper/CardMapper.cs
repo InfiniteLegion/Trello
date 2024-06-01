@@ -8,11 +8,13 @@ namespace Trello.Classes.Mapper
     {
         private CheloDbContext db;
         private readonly CommentMapper commentMapper;
+        private readonly TagMapper tagMapper;
 
-        public CardMapper(CheloDbContext db, CommentMapper commentMapper) 
+        public CardMapper(CheloDbContext db, CommentMapper commentMapper, TagMapper tagMapper) 
         { 
             this.db = db; 
             this.commentMapper = commentMapper;
+            this.tagMapper = tagMapper;
         }
 
         public async Task<CardDTO> ToDTO(Card card)
@@ -41,7 +43,7 @@ namespace Trello.Classes.Mapper
             foreach (var item in cardTags)
             {
                 Tag? tag = await db.Tags.FirstOrDefaultAsync(x => x.Id == item.IdTags);
-                tagDTOs.Add(TagMapper.ToDTO(tag));
+                tagDTOs.Add(await tagMapper.ToDTO(tag));
             }
 
             var comments = await db.CardComments.Where(x => x.IdCard == card.Id).ToListAsync();

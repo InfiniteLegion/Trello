@@ -22,6 +22,6 @@
 
         public List<TagDTO>? TagDTOs { get; set; }
 
-        public List<UserDto>? UserDtos { get; set; }
+        public List<UserDTO>? UserDtos { get; set; }
     }
 }

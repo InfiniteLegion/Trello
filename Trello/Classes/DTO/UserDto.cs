@@ -2,7 +2,7 @@
 
 namespace Trello.Classes.DTO
 {
-    public partial class UserDto
+    public partial class UserDTO
     {
         [JsonIgnore]
         public long Id { get; set; }
