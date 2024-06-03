@@ -185,5 +185,27 @@ namespace Trello.Controllers
 
             return teams;
         }
+
+        [HttpGet("search/{partialName}")]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> SearchUsersByPartialName(string partialName)
+        {
+            //if (partialName.Length < 3)
+            //{
+            //    return BadRequest("Search string must be at least 3 characters long.");
+            //}
+
+            var users = await db.UserInfos
+                                .Where(x => EF.Functions.Like(x.Username.ToLower(), $"%{partialName}%"))
+                                .ToListAsync();
+
+            var userDTOs = new List<UserDTO>();
+            foreach (var user in users)
+            {
+                UserDTO userDTO = await mapper.ToDTO(user);
+                userDTOs.Add(userDTO);
+            }
+
+            return userDTOs;
+        }
     }
 }
