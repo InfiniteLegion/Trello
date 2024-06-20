@@ -18,6 +18,16 @@ public partial class UserInfo
     [JsonIgnore]
     public virtual ICollection<CardComment> CardComments { get; set; } = new List<CardComment>();
     [JsonIgnore]
+    public virtual ICollection<Configuration> Configurations { get; set; } = new List<Configuration>();
+    [JsonIgnore]
+    public virtual ICollection<Friendship> FriendshipIdUser1SenderNavigations { get; set; } = new List<Friendship>();
+    [JsonIgnore]
+    public virtual ICollection<Friendship> FriendshipIdUser2ReceiverNavigations { get; set; } = new List<Friendship>();
+    [JsonIgnore]
+    public virtual ICollection<TeamUserNotification> TeamUserNotificationIdReceiverNavigations { get; set; } = new List<TeamUserNotification>();
+    [JsonIgnore]
+    public virtual ICollection<TeamUserNotification> TeamUserNotificationIdSenderNavigations { get; set; } = new List<TeamUserNotification>();
+    [JsonIgnore]
     public virtual ICollection<TeamUser> TeamUsers { get; set; } = new List<TeamUser>();
     [JsonIgnore]
     public virtual ICollection<UserCard> UserCards { get; set; } = new List<UserCard>();

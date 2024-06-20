@@ -23,6 +23,10 @@ public partial class CheloDbContext : DbContext
 
     public virtual DbSet<CardTag> CardTags { get; set; }
 
+    public virtual DbSet<Configuration> Configurations { get; set; }
+
+    public virtual DbSet<Friendship> Friendships { get; set; }
+
     public virtual DbSet<StatusColumn> StatusColumns { get; set; }
 
     public virtual DbSet<Tag> Tags { get; set; }
@@ -32,6 +36,8 @@ public partial class CheloDbContext : DbContext
     public virtual DbSet<Team> Teams { get; set; }
 
     public virtual DbSet<TeamUser> TeamUsers { get; set; }
+
+    public virtual DbSet<TeamUserNotification> TeamUserNotifications { get; set; }
 
     public virtual DbSet<UserCard> UserCards { get; set; }
 
@@ -129,6 +135,45 @@ public partial class CheloDbContext : DbContext
                 .HasConstraintName("card_tags_id_tags_fkey");
         });
 
+        modelBuilder.Entity<Configuration>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("configurations_pkey");
+
+            entity.ToTable("configurations");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdUser).HasColumnName("id_user");
+            entity.Property(e => e.IsprivateTeamNotification)
+                .HasDefaultValue(false)
+                .HasColumnName("isprivate_team_notification");
+
+            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.Configurations)
+                .HasForeignKey(d => d.IdUser)
+                .HasConstraintName("configurations_id_user_fkey");
+        });
+
+        modelBuilder.Entity<Friendship>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("friendship_pkey");
+
+            entity.ToTable("friendship");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdUser1Sender).HasColumnName("id_user1_sender");
+            entity.Property(e => e.IdUser2Receiver).HasColumnName("id_user2_receiver");
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .HasColumnName("status");
+
+            entity.HasOne(d => d.IdUser1SenderNavigation).WithMany(p => p.FriendshipIdUser1SenderNavigations)
+                .HasForeignKey(d => d.IdUser1Sender)
+                .HasConstraintName("friendship_id_user1_sender_fkey");
+
+            entity.HasOne(d => d.IdUser2ReceiverNavigation).WithMany(p => p.FriendshipIdUser2ReceiverNavigations)
+                .HasForeignKey(d => d.IdUser2Receiver)
+                .HasConstraintName("friendship_id_user2_receiver_fkey");
+        });
+
         modelBuilder.Entity<StatusColumn>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("status_pkey");
@@ -218,6 +263,28 @@ public partial class CheloDbContext : DbContext
             entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.TeamUsers)
                 .HasForeignKey(d => d.IdUser)
                 .HasConstraintName("team_user_id_user_fkey");
+        });
+
+        modelBuilder.Entity<TeamUserNotification>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("team_user_notifications_pkey");
+
+            entity.ToTable("team_user_notifications");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdReceiver).HasColumnName("id_receiver");
+            entity.Property(e => e.IdSender).HasColumnName("id_sender");
+            entity.Property(e => e.Status)
+                .HasMaxLength(255)
+                .HasColumnName("status");
+
+            entity.HasOne(d => d.IdReceiverNavigation).WithMany(p => p.TeamUserNotificationIdReceiverNavigations)
+                .HasForeignKey(d => d.IdReceiver)
+                .HasConstraintName("team_user_notifications_id_receiver_fkey");
+
+            entity.HasOne(d => d.IdSenderNavigation).WithMany(p => p.TeamUserNotificationIdSenderNavigations)
+                .HasForeignKey(d => d.IdSender)
+                .HasConstraintName("team_user_notifications_id_sender_fkey");
         });
 
         modelBuilder.Entity<UserCard>(entity =>
