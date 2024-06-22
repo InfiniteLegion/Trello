@@ -21,9 +21,20 @@ namespace Trello.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Card>>> GetAllCards()
+        public async Task<ActionResult<IEnumerable<CardDTO>>> GetAllCards()
         {
-            return await db.Cards.ToListAsync();
+
+
+            var cards = await db.Cards.ToListAsync();
+            var cardDTOs = new List<CardDTO>();
+
+            foreach (var card in cards)
+            {
+                var cardDTO = await cardMapper.ToDTO(card);
+                cardDTOs.Add(cardDTO);
+            }
+
+            return cardDTOs;
         }
 
         [HttpGet("{id}")]
@@ -79,6 +90,42 @@ namespace Trello.Controllers
             if (card == null)
             {
                 return BadRequest("Card not found");
+            }
+
+            var tasks = await db.Tasks.Where(x => x.IdCard == card.Id).ToListAsync();
+            if (tasks.Any())
+            {
+                foreach (var task in tasks)
+                {
+                    db.Tasks.Remove(task);
+                }
+            }
+
+            var comments = await db.CardComments.Where(x => x.IdCard == card.Id).ToListAsync();
+            if (comments.Any())
+            {
+                foreach (var comment in comments)
+                {
+                    db.CardComments.Remove(comment);
+                }
+            }
+
+            var users = await db.UserCards.Where(x => x.IdCard == card.Id).ToListAsync();
+            if (users.Any())
+            {
+                foreach (var user in users)
+                {
+                    db.UserCards.Remove(user);
+                }
+            }
+
+            var tags = await db.CardTags.Where(x => x.IdCard == card.Id).ToListAsync();
+            if (tags.Any())
+            {
+                foreach (var tag in tags)
+                {
+                    db.CardTags.Remove(tag);
+                }
             }
 
             db.Cards.Remove(card);

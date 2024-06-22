@@ -8,9 +8,8 @@ public partial class Configuration
 {
     public long Id { get; set; }
 
-    public long? IdUser { get; set; }
-
-    public bool? IsprivateTeamNotification { get; set; }
+    public string? GuidUser { get; set; }
+    public bool? IsprivateTeamNotifications { get; set; }
     [JsonIgnore]
-    public virtual UserInfo? IdUserNavigation { get; set; }
+    public virtual UserInfo? GuidUserNavigation { get; set; }
 }

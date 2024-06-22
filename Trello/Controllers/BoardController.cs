@@ -77,6 +77,33 @@ namespace Trello.Controllers
                 return BadRequest("Board not found");
             }
 
+            var cards = await db.Cards.Where(x => x.IdBoard == board.Id).ToListAsync();
+            if (cards.Any())
+            {
+                foreach (var card in cards)
+                {
+                    await DeleteCard(card);
+                }
+            }
+
+            var tags = await db.Tags.Where(x => x.IdBoard == board.Id).ToListAsync();
+            if (tags.Any())
+            {
+                foreach (var tag in tags)
+                {
+                    db.Tags.Remove(tag);
+                }
+            }
+
+            var statusColumns = await db.StatusColumns.Where(x => x.IdBoard == board.Id).ToListAsync();
+            if (statusColumns.Any())
+            {
+                foreach (var statusColumn in statusColumns)
+                {
+                    db.StatusColumns.Remove(statusColumn);
+                }
+            }
+
             db.Boards.Remove(board);
             await db.SaveChangesAsync();
             return Ok("Board deleted");
@@ -124,6 +151,47 @@ namespace Trello.Controllers
             var statusColumns = await db.StatusColumns.Where(x => x.IdBoard == board.Id).ToListAsync();
 
             return statusColumns;
+        }
+
+        private async System.Threading.Tasks.Task DeleteCard(Card card)
+        {
+            var tasks = await db.Tasks.Where(x => x.IdCard == card.Id).ToListAsync();
+            if (tasks.Any())
+            {
+                foreach (var task in tasks)
+                {
+                    db.Tasks.Remove(task);
+                }
+            }
+
+            var comments = await db.CardComments.Where(x => x.IdCard == card.Id).ToListAsync();
+            if (comments.Any())
+            {
+                foreach (var comment in comments)
+                {
+                    db.CardComments.Remove(comment);
+                }
+            }
+
+            var users = await db.UserCards.Where(x => x.IdCard == card.Id).ToListAsync();
+            if (users.Any())
+            {
+                foreach (var user in users)
+                {
+                    db.UserCards.Remove(user);
+                }
+            }
+
+            var tags = await db.CardTags.Where(x => x.IdCard == card.Id).ToListAsync();
+            if (tags.Any())
+            {
+                foreach (var tag in tags)
+                {
+                    db.CardTags.Remove(tag);
+                }
+            }
+
+            db.Cards.Remove(card);
         }
     }
 }

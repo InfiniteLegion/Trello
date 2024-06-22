@@ -68,9 +68,14 @@ namespace Trello.Controllers
                 return BadRequest(potentialError);
             }
 
-            user.Guid = Guid.NewGuid().ToString();
+            string guid = Guid.NewGuid().ToString();
+            user.Guid = guid;
 
             await db.UserInfos.AddAsync(user);
+
+            Configuration configuration = new Configuration() { GuidUser = guid };
+            await db.Configurations.AddAsync(configuration);
+
             await db.SaveChangesAsync();
             return Ok(user);
         }

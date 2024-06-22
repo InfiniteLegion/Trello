@@ -137,19 +137,22 @@ public partial class CheloDbContext : DbContext
 
         modelBuilder.Entity<Configuration>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("configurations_pkey");
+            entity.HasKey(e => e.Id).HasName("configuration_pkey");
 
-            entity.ToTable("configurations");
+            entity.ToTable("configuration");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.IdUser).HasColumnName("id_user");
-            entity.Property(e => e.IsprivateTeamNotification)
+            entity.Property(e => e.GuidUser)
+                .HasMaxLength(55)
+                .HasColumnName("guid_user");
+            entity.Property(e => e.IsprivateTeamNotifications)
                 .HasDefaultValue(false)
-                .HasColumnName("isprivate_team_notification");
+                .HasColumnName("isprivate_team_notifications");
 
-            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.Configurations)
-                .HasForeignKey(d => d.IdUser)
-                .HasConstraintName("configurations_id_user_fkey");
+            entity.HasOne(d => d.GuidUserNavigation).WithMany(p => p.Configurations)
+                .HasPrincipalKey(p => p.Guid)
+                .HasForeignKey(d => d.GuidUser)
+                .HasConstraintName("configuration_guid_user_fkey");
         });
 
         modelBuilder.Entity<Friendship>(entity =>
@@ -313,6 +316,8 @@ public partial class CheloDbContext : DbContext
             entity.ToTable("user_info");
 
             entity.HasIndex(e => e.Email, "user_info_email_key").IsUnique();
+
+            entity.HasIndex(e => e.Guid, "user_info_guid_key").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Email)
