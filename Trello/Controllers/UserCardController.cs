@@ -13,13 +13,22 @@ namespace Trello.Controllers
 
         public UserCardController(CheloDbContext db) { this.db = db; }
 
-        [HttpPost]
-        public async Task<ActionResult> AddUserToCard(UserCard userCard)
+        [HttpPost("cardId={cardId}&userGuid={userGuid}")]
+        public async Task<ActionResult> AddUserToCard(int cardId, string userGuid)
         {
-            if (userCard == null)
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+            if (user == null)
             {
-                return BadRequest("UserCard object is null");
+                return BadRequest("User not found");
             }
+
+            Card card = await db.Cards.FirstOrDefaultAsync(x => x.Id == cardId);
+            if (card == null)
+            {
+                return BadRequest("Card not found");
+            }
+
+            UserCard userCard = new UserCard() {  IdCard = card.Id, IdUser = user.Id };
 
             await db.UserCards.AddAsync(userCard);
             await db.SaveChangesAsync();
