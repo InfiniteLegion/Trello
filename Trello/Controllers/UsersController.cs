@@ -200,7 +200,7 @@ namespace Trello.Controllers
             //}
 
             var users = await db.UserInfos
-                                .Where(x => EF.Functions.Like(x.Username.ToLower(), $"%{partialName}%"))
+                                .Where(x => EF.Functions.Like(x.Username.ToLower(), $"%{partialName.ToLower()}%"))
                                 .ToListAsync();
 
             var userDTOs = new List<UserDTO>();
