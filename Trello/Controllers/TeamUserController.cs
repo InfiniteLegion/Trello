@@ -10,6 +10,7 @@ namespace Trello.Controllers
     public class TeamUserController : ControllerBase
     {
         private CheloDbContext db;
+        
 
         public TeamUserController(CheloDbContext db) { this.db = db; }
 
@@ -21,9 +22,33 @@ namespace Trello.Controllers
                 return BadRequest("TeamUser object is null");
             }
 
-            await db.TeamUsers.AddAsync(teamUser);
-            await db.SaveChangesAsync();
-            return Ok("User added to team");
+            if (await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == teamUser.IdTeam && x.IdUser == teamUser.IdUser) != null)
+            {
+                return BadRequest("This user already in this team");
+            }
+
+            if (await db.TeamUserNotifications.FirstOrDefaultAsync(x => x.IdSender == teamUser.IdTeam && x.IdReceiver == teamUser.IdUser) != null)
+            {
+                return BadRequest("User already have an invitation from this team");
+            }
+
+            Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == teamUser.IdTeam);
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == teamUser.IdUser);
+            Configuration configuration = await db.Configurations.FirstOrDefaultAsync(x => x.GuidUser.Equals(user.Guid));
+
+            if ((bool)configuration.IsprivateTeamNotifications)
+            {
+                TeamUserNotification notification = new TeamUserNotification() { IdSender = teamUser.IdTeam, IdReceiver = user.Id, Status = "WAITING" };
+                await db.TeamUserNotifications.AddAsync(notification);
+                await db.SaveChangesAsync();
+                return Ok("Invitation sent!");
+            }
+            else
+            {
+                await db.TeamUsers.AddAsync(teamUser);
+                await db.SaveChangesAsync();
+                return Ok("User added to team");
+            }
         }
 
         [HttpDelete("team={teamId}&user={userId}")]

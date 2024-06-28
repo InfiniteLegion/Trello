@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Trello.Classes;
 using Trello.Classes.DTO;
@@ -94,7 +95,7 @@ namespace Trello.Controllers
             }
 
             UserInfo originalUser = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(user.Guid));
-            
+
             UserValidator.CheckUserUpdate(user, originalUser);
             await db.SaveChangesAsync();
             return Ok(originalUser);

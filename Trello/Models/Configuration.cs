@@ -7,7 +7,6 @@ namespace Trello.Models;
 public partial class Configuration
 {
     public long Id { get; set; }
-
     public string? GuidUser { get; set; }
     public bool? IsprivateTeamNotifications { get; set; }
     [JsonIgnore]

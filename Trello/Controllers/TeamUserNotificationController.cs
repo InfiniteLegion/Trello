@@ -2,69 +2,79 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Query.Expressions.Internal;
+using Trello.Classes.DTO;
+using Trello.Classes.Mapper;
 using Trello.Models;
 
 namespace Trello.Controllers
 {
-    [Route("api/teamusernotifications")]
+    [Route("api/team-user-notifications")]
     [ApiController]
     public class TeamUserNotificationController : ControllerBase
     {
         private CheloDbContext db;
+        private readonly TeamNotificationMapper teamNotificationMapper;
 
-        public TeamUserNotificationController(CheloDbContext db) { this.db = db; }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TeamUserNotification>>> GetAllTeamUserNotifications()
+        public TeamUserNotificationController(CheloDbContext db, TeamNotificationMapper teamNotificationMapper)
         {
-            return await db.TeamUserNotifications.ToListAsync();
+            this.db = db;
+            this.teamNotificationMapper = teamNotificationMapper;
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TeamUserNotification>> GetTeamUserNotificationsById(int id)
-        {
-            TeamUserNotification teamUserNotification = await db.TeamUserNotifications.FirstOrDefaultAsync(x => x.Id == id);
-            if(teamUserNotification == null)
-            {
-                return BadRequest("TeamUserNotification object not found");
-            }
-            return new ObjectResult(teamUserNotification);
-        }
-        [HttpGet("/{userId}")]
-        public ActionResult<IEnumerable<TeamUserNotification>> GetTeamNotifications(int userId)
-        {
-            var teamUserNotifications = db.TeamUserNotifications.Where(f => f.IdSender == userId || f.IdReceiver == userId).ToList();
 
-            return Ok(teamUserNotifications);
-        }
-        [HttpPost]
-        public async Task<ActionResult<TeamUserNotification>> CreateTeamUserNotifications(TeamUserNotification teamUserNotification)
+        [HttpGet("user={guid}")]
+        public async Task<ActionResult<List<TeamNotificationDTO>>> GetTeamUserNotificationsByUserGuid(string guid)
         {
-            if (TeamUserNotificationExists((int)teamUserNotification.IdSender, (int)teamUserNotification.IdReceiver))
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(guid));
+            if (user == null)
             {
-                return BadRequest("TeamUserNotification object is null");
+                return BadRequest("User not found");
             }
-            if (teamUserNotification == null)
+
+            var teamNotifications = await db.TeamUserNotifications
+                .Where(x => x.IdReceiver == user.Id)
+                .ToListAsync();
+
+            var teamDTOs = new List<TeamNotificationDTO>();
+            foreach (var teamNotification in teamNotifications)
             {
-                return BadRequest("TeamUserNotification object is null");
+                TeamNotificationDTO teamNotificationDTO = await teamNotificationMapper.ToDTO(teamNotification);
+                teamDTOs.Add(teamNotificationDTO);
             }
-            await db.TeamUserNotifications.AddAsync(teamUserNotification);
-            await db.SaveChangesAsync();
-            return Ok(teamUserNotification);
+
+            return Ok(teamDTOs);
         }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<TeamUserNotification>> DeleteTeamUserNotifications(int id)
+
+        [HttpPut("notification={notificationId}&decision={decision}")]
+        public async Task<ActionResult> AcceptDenyInvitation(int notificationId, string decision)
         {
-            TeamUserNotification teamUserNotification = await db.TeamUserNotifications.FirstOrDefaultAsync(x => x.Id == id);
-            if(teamUserNotification == null)
+            TeamUserNotification notification = await db.TeamUserNotifications
+                .FirstOrDefaultAsync(x => x.Id == notificationId);
+
+            if (notification == null)
             {
-                return BadRequest("TeamUserNotification object is null");
+                return BadRequest("Wrong id");
             }
-            db.TeamUserNotifications.Remove(teamUserNotification);
-            await db.SaveChangesAsync();
-            return Ok("TeamUserNotification is deleted!");
-        }
-        private bool TeamUserNotificationExists(int userId1, int userId2)
-        {
-            return db.TeamUserNotifications.Any(f => (f.IdSender == userId1 && f.IdReceiver == userId2) || (f.IdSender == userId2 && f.IdReceiver == userId1));
+
+            if (decision.ToLower().Equals("accept"))
+            {
+                TeamUser teamUser = new TeamUser() { IdTeam = notification.IdSender, IdUser = notification.IdReceiver, Role = "USER" };
+
+                await db.TeamUsers.AddAsync(teamUser);
+                db.TeamUserNotifications.Remove(notification);
+                await db.SaveChangesAsync();
+
+                return Ok("User added to team");
+            }
+            else if (decision.ToLower().Equals("deny"))
+            {
+                db.TeamUserNotifications.Remove(notification);
+                await db.SaveChangesAsync();
+                return Ok("Invitation denied");
+            }
+            else
+            {
+                return Ok("Wrong command");
+            }
         }
     }
 }

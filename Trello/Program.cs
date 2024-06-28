@@ -28,6 +28,8 @@ builder.Services.AddScoped<StatusColumnMapper>();
 builder.Services.AddScoped<TagMapper>();
 builder.Services.AddScoped<TaskMapper>();
 builder.Services.AddScoped<UserMapper>();
+builder.Services.AddScoped<TeamNotificationMapper>();
+builder.Services.AddScoped<FriendMapper>();
 
 var app = builder.Build();
 

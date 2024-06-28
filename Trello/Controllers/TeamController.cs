@@ -32,16 +32,29 @@ namespace Trello.Controllers
             return new ObjectResult(team);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Team>> AddTeam(Team team)
+        [HttpPost("user={userGuid}")]
+        public async Task<ActionResult<Team>> AddTeam(Team team, string userGuid)
         {
             if (team == null)
             {
                 return BadRequest("Team is null");
             }
 
+            UserInfo user = await db.UserInfos
+                .FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+
             await db.Teams.AddAsync(team);
             await db.SaveChangesAsync();
+
+            Team lastTeam = await db.Teams
+                .OrderBy(x => x.Id)
+                .LastAsync();
+
+            TeamUser teamUser = new TeamUser() { IdTeam = lastTeam.Id, IdUser = user.Id, Role = "ADMIN" };
+
+            await db.TeamUsers.AddAsync(teamUser);
+            await db.SaveChangesAsync();
+
             return Ok(team);
         }
 
@@ -72,6 +85,24 @@ namespace Trello.Controllers
             if (team == null)
             {
                 return BadRequest("Team not found");
+            }
+
+            var teamUsers = await db.TeamUsers
+                .Where(x => x.Id == team.Id)
+                .ToListAsync();
+
+            foreach (var item in teamUsers)
+            {
+                db.TeamUsers.Remove(item);
+            }
+
+            var teamBoards = await db.Boards
+                .Where(x => x.IdTeam == team.Id)
+                .ToListAsync();
+
+            foreach (var item in teamBoards)
+            {
+                db.Boards.Remove(item);
             }
 
             db.Teams.Remove(team);
