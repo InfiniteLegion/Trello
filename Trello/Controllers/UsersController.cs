@@ -27,7 +27,6 @@ namespace Trello.Controllers
             return await db.UserInfos.ToListAsync();
         }
 
-        // GET /users/5  5 - приклад id користувача
         [HttpGet("guid={guid}")]
         public async Task<ActionResult<UserDTO>> GetUserByGuid(string guid)
         {

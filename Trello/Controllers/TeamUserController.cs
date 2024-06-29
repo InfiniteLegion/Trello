@@ -14,39 +14,48 @@ namespace Trello.Controllers
 
         public TeamUserController(CheloDbContext db) { this.db = db; }
 
-        [HttpPost]
-        public async Task<ActionResult> AddUserToTeam(TeamUser teamUser)
+        [HttpPost("add/team={teamId}&user={userGuid}")]
+        public async Task<ActionResult> AddUserToTeam(long teamId, string userGuid)
         {
-            if (teamUser == null)
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+            Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == teamId);
+
+            if (user == null)
             {
-                return BadRequest("TeamUser object is null");
+                return BadRequest("User not found");
             }
 
-            if (await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == teamUser.IdTeam && x.IdUser == teamUser.IdUser) != null)
+            if (team == null)
+            {
+                return BadRequest("Team not found");
+            }
+
+            if (await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == team.Id && x.IdUser == user.Id) != null)
             {
                 return BadRequest("This user already in this team");
             }
 
-            if (await db.TeamUserNotifications.FirstOrDefaultAsync(x => x.IdSender == teamUser.IdTeam && x.IdReceiver == teamUser.IdUser) != null)
+            if (await db.TeamUserNotifications.FirstOrDefaultAsync(x => x.IdSender == team.Id && x.IdReceiver == user.Id) != null)
             {
                 return BadRequest("User already have an invitation from this team");
             }
 
-            Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == teamUser.IdTeam);
-            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == teamUser.IdUser);
             Configuration configuration = await db.Configurations.FirstOrDefaultAsync(x => x.GuidUser.Equals(user.Guid));
 
             if ((bool)configuration.IsprivateTeamNotifications)
             {
-                TeamUserNotification notification = new TeamUserNotification() { IdSender = teamUser.IdTeam, IdReceiver = user.Id, Status = "WAITING" };
+                TeamUserNotification notification = new TeamUserNotification() { IdSender = team.Id, IdReceiver = user.Id, Status = "WAITING" };
                 await db.TeamUserNotifications.AddAsync(notification);
                 await db.SaveChangesAsync();
                 return Ok("Invitation sent!");
             }
             else
             {
+                TeamUser teamUser = new TeamUser { IdTeam = team.Id, IdUser = user.Id };
+
                 await db.TeamUsers.AddAsync(teamUser);
                 await db.SaveChangesAsync();
+
                 return Ok("User added to team");
             }
         }
