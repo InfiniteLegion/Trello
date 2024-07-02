@@ -16,6 +16,11 @@ namespace Trello.Classes.Mapper
 
         public async Task<UserDTO> ToDTO(UserInfo user)
         {
+            if (user == null)
+            {
+                return null;
+            }
+
             UserDTO userDTO = new UserDTO()
             {
                 UserName = user.Username,

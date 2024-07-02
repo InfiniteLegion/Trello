@@ -7,6 +7,11 @@ namespace Trello.Classes.Mapper
     {
         public async Task<StatusColumnDTO> ToDTO(StatusColumn statusColumn)
         {
+            if (statusColumn == null)
+            {
+                return null;
+            }
+
             return new StatusColumnDTO()
             {
                 Id = statusColumn.Id,

@@ -7,6 +7,11 @@ namespace Trello.Classes.Mapper
     {
         public async Task<TagDTO> ToDTO(Tag tag)
         {
+            if (tag == null)
+            {
+                return null;
+            }
+
             return new TagDTO()
             {
                 Id = tag.Id,

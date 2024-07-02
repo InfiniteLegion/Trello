@@ -21,6 +21,11 @@ namespace Trello.Classes.Mapper
 
         public async Task<CardDTO> ToDTO(Card card)
         {
+            if (card == null)
+            {
+                return null;
+            }
+
             CardDTO cardDTO = new CardDTO()
             {
                 Id = card.Id,

@@ -15,6 +15,11 @@ namespace Trello.Classes.Mapper
 
         public async Task<TeamNotificationDTO> ToDTO(TeamUserNotification notification)
         {
+            if (notification == null)
+            {
+                return null;
+            }
+
             Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == notification.IdSender);
 
             return new TeamNotificationDTO

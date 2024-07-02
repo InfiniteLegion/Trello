@@ -6,6 +6,11 @@ namespace Trello.Classes.Mapper
     {
         public static TaskDTO ToDTO(Models.Task task)
         {
+            if (task == null)
+            {
+                return null;
+            }
+
             return new TaskDTO()
             {
                 Id = task.Id,

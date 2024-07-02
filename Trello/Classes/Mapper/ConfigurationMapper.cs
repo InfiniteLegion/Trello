@@ -14,6 +14,11 @@ namespace Trello.Classes.Mapper
 
         public async Task<ConfigurationDTO> ToDTO(Configuration configuration)
         {
+            if (configuration == null)
+            {
+                return null;
+            }
+
             ConfigurationDTO configurationDTO = new ConfigurationDTO()
             {
                 Id = configuration.Id,
