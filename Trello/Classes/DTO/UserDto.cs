@@ -9,5 +9,6 @@ namespace Trello.Classes.DTO
         public string UserName { get; set; }
         public string Email { get; set; }
         public string? Guid { get; set; }
+        public ConfigurationDTO ConfigurationDTO { get; set; }
     }
 }

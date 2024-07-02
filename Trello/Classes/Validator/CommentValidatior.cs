@@ -18,9 +18,9 @@ namespace Trello.Classes.Validator
             {
                 originalComment.IdCard = commentToUpdate.IdCard;
             }
-            if (commentToUpdate.IdUser != null)
+            if (commentToUpdate.GuidUser != null)
             {
-                originalComment.IdUser = commentToUpdate.IdUser;
+                originalComment.GuidUser = commentToUpdate.GuidUser;
             }
         }
     }

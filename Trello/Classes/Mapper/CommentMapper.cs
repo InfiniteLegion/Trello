@@ -25,7 +25,7 @@ namespace Trello.Classes.Mapper
                 IdCard = comment.IdCard
             };
 
-            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == comment.IdUser);
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(comment.GuidUser));
             UserDTO userDto = await userMapper.ToDTO(user);
 
             commentDTO.User = userDto;

@@ -58,23 +58,33 @@ namespace Trello.Controllers
             return Ok(team);
         }
 
-        [HttpPut]
-        public async Task<ActionResult<Team>> UpdateTeam(Team team)
+        [HttpPut("isAdmin={userGuid}")]
+        public async Task<ActionResult<Team>> UpdateTeam(Team team, string userGuid)
         {
-            if (team == null)
-            {
-                return BadRequest("Team is null");
-            }
-            if (!db.Teams.Any(x => x.Id == team.Id))
-            {
-                return BadRequest("Team not found");
-            }
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+            TeamUser teamUser = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == team.Id && x.IdUser == user.Id);
 
-            Team originalTeam = await db.Teams.FirstOrDefaultAsync(x => x.Id == team.Id);
+            if (teamUser.Role == "ADMIN")
+            {
+                if (team == null)
+                {
+                    return BadRequest("Team is null");
+                }
+                if (!db.Teams.Any(x => x.Id == team.Id))
+                {
+                    return BadRequest("Team not found");
+                }
 
-            TeamValidator.CheckTeamUpdate(team, originalTeam);
-            await db.SaveChangesAsync();
-            return Ok(originalTeam);
+                Team originalTeam = await db.Teams.FirstOrDefaultAsync(x => x.Id == team.Id);
+
+                TeamValidator.CheckTeamUpdate(team, originalTeam);
+                await db.SaveChangesAsync();
+                return Ok(originalTeam);
+            }
+            else
+            {
+                return BadRequest("User is not admin");
+            }
         }
 
         [HttpDelete("{id}")]

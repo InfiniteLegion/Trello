@@ -16,5 +16,5 @@ public partial class TeamUserNotification
     [JsonIgnore]
     public virtual UserInfo? IdReceiverNavigation { get; set; }
     [JsonIgnore]
-    public virtual UserInfo? IdSenderNavigation { get; set; }
+    public virtual Team? IdSenderNavigation { get; set; }
 }

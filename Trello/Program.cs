@@ -30,6 +30,7 @@ builder.Services.AddScoped<TaskMapper>();
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<TeamNotificationMapper>();
 builder.Services.AddScoped<FriendMapper>();
+builder.Services.AddScoped<ConfigurationMapper>();
 
 var app = builder.Build();
 

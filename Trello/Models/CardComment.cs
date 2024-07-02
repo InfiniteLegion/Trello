@@ -14,9 +14,9 @@ public partial class CardComment
 
     public long? IdCard { get; set; }
 
-    public long? IdUser { get; set; }
+    public string? GuidUser { get; set; }
+    [JsonIgnore]
+    public virtual UserInfo? GuidUserNavigation { get; set; }
     [JsonIgnore]
     public virtual Card? IdCardNavigation { get; set; }
-    [JsonIgnore]
-    public virtual UserInfo? IdUserNavigation { get; set; }
 }

@@ -12,5 +12,7 @@ public partial class Team
     [JsonIgnore]
     public virtual ICollection<Board> Boards { get; set; } = new List<Board>();
     [JsonIgnore]
+    public virtual ICollection<TeamUserNotification> TeamUserNotifications { get; set; } = new List<TeamUserNotification>();
+    [JsonIgnore]
     public virtual ICollection<TeamUser> TeamUsers { get; set; } = new List<TeamUser>();
 }

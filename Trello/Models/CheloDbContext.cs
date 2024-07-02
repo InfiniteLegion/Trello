@@ -104,16 +104,19 @@ public partial class CheloDbContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("comment_datetime");
             entity.Property(e => e.CommentText).HasColumnName("comment_text");
+            entity.Property(e => e.GuidUser)
+                .HasMaxLength(55)
+                .HasColumnName("guid_user");
             entity.Property(e => e.IdCard).HasColumnName("id_card");
-            entity.Property(e => e.IdUser).HasColumnName("id_user");
+
+            entity.HasOne(d => d.GuidUserNavigation).WithMany(p => p.CardComments)
+                .HasPrincipalKey(p => p.Guid)
+                .HasForeignKey(d => d.GuidUser)
+                .HasConstraintName("card_comment_guid_user_fkey");
 
             entity.HasOne(d => d.IdCardNavigation).WithMany(p => p.CardComments)
                 .HasForeignKey(d => d.IdCard)
                 .HasConstraintName("card_comment_id_card_fkey");
-
-            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.CardComments)
-                .HasForeignKey(d => d.IdUser)
-                .HasConstraintName("card_comment_id_user_fkey");
         });
 
         modelBuilder.Entity<CardTag>(entity =>
@@ -281,11 +284,11 @@ public partial class CheloDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("status");
 
-            entity.HasOne(d => d.IdReceiverNavigation).WithMany(p => p.TeamUserNotificationIdReceiverNavigations)
+            entity.HasOne(d => d.IdReceiverNavigation).WithMany(p => p.TeamUserNotifications)
                 .HasForeignKey(d => d.IdReceiver)
                 .HasConstraintName("team_user_notifications_id_receiver_fkey");
 
-            entity.HasOne(d => d.IdSenderNavigation).WithMany(p => p.TeamUserNotificationIdSenderNavigations)
+            entity.HasOne(d => d.IdSenderNavigation).WithMany(p => p.TeamUserNotifications)
                 .HasForeignKey(d => d.IdSender)
                 .HasConstraintName("team_user_notifications_id_sender_fkey");
         });

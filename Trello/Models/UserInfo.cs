@@ -24,9 +24,7 @@ public partial class UserInfo
     [JsonIgnore]
     public virtual ICollection<Friendship> FriendshipIdUser2ReceiverNavigations { get; set; } = new List<Friendship>();
     [JsonIgnore]
-    public virtual ICollection<TeamUserNotification> TeamUserNotificationIdReceiverNavigations { get; set; } = new List<TeamUserNotification>();
-    [JsonIgnore]
-    public virtual ICollection<TeamUserNotification> TeamUserNotificationIdSenderNavigations { get; set; } = new List<TeamUserNotification>();
+    public virtual ICollection<TeamUserNotification> TeamUserNotifications { get; set; } = new List<TeamUserNotification>();
     [JsonIgnore]
     public virtual ICollection<TeamUser> TeamUsers { get; set; } = new List<TeamUser>();
     [JsonIgnore]
