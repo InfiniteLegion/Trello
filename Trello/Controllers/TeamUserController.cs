@@ -14,9 +14,17 @@ namespace Trello.Controllers
 
         public TeamUserController(CheloDbContext db) { this.db = db; }
 
-        [HttpPost("add/team={teamId}&user={userGuid}")]
-        public async Task<ActionResult> AddUserToTeam(long teamId, string userGuid)
+        [HttpPost("add/team={teamId}&user={userGuid}&isAdmin={isAdminGuid}")]
+        public async Task<ActionResult> AddUserToTeam(long teamId, string userGuid, string isAdminGuid)
         {
+            UserInfo isAdminUser = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(isAdminGuid));
+            TeamUser teamUser1 = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == teamId && x.IdUser == isAdminUser.Id);
+
+            if (!teamUser1.Role.Equals("ADMIN"))
+            {
+                return BadRequest("User is not admin");
+            }
+
             UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
             Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == teamId);
 
@@ -60,10 +68,19 @@ namespace Trello.Controllers
             }
         }
 
-        [HttpDelete("team={teamId}&user={userId}")]
-        public async Task<ActionResult> DeleteUserFromTeam(int teamId, int userId)
+        [HttpDelete("team={teamId}&user={userGuid}&isAdmin={isAdminGuid}")]
+        public async Task<ActionResult> DeleteUserFromTeam(int teamId, string userGuid, string isAdminGuid)
         {
-            TeamUser teamUser = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == teamId && x.IdUser == userId);
+            UserInfo isAdminUser = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(isAdminGuid));
+            TeamUser teamUser1 = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == teamId && x.IdUser == isAdminUser.Id);
+
+            if (!teamUser1.Role.Equals("ADMIN"))
+            {
+                return BadRequest("User is not admin");
+            }
+
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+            TeamUser teamUser = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == teamId && x.IdUser == user.Id);
 
             if (teamUser == null)
             {

@@ -23,8 +23,6 @@ namespace Trello.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CardDTO>>> GetAllCards()
         {
-
-
             var cards = await db.Cards.ToListAsync();
             var cardDTOs = new List<CardDTO>();
 

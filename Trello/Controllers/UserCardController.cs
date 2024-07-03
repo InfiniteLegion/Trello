@@ -28,17 +28,17 @@ namespace Trello.Controllers
                 return BadRequest("Card not found");
             }
 
-            UserCard userCard = new UserCard() {  IdCard = card.Id, IdUser = user.Id };
+            UserCard userCard = new UserCard() {  IdCard = card.Id, GuidUser = user.Guid };
 
             await db.UserCards.AddAsync(userCard);
             await db.SaveChangesAsync();
             return Ok("User added to card");
         }
 
-        [HttpDelete("card={cardId}&user={userId}")]
-        public async Task<ActionResult> DeleteUserFromTeam(int cardId, int userId)
+        [HttpDelete("card={cardId}&user={userGuid}")]
+        public async Task<ActionResult> DeleteUserFromTeam(int cardId, string userGuid)
         {
-            UserCard userCard = await db.UserCards.FirstOrDefaultAsync(x => x.IdCard == cardId && x.IdUser == userId);
+            UserCard userCard = await db.UserCards.FirstOrDefaultAsync(x => x.IdCard == cardId && x.GuidUser.Equals(userGuid));
 
             if (userCard == null)
             {

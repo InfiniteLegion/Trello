@@ -64,7 +64,7 @@ namespace Trello.Controllers
             UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
             TeamUser teamUser = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == team.Id && x.IdUser == user.Id);
 
-            if (teamUser.Role == "ADMIN")
+            if (teamUser.Role.Equals("ADMIN"))
             {
                 if (team == null)
                 {
@@ -87,9 +87,17 @@ namespace Trello.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteTeamById(int id)
+        [HttpDelete("{id}&isAdmin={userGuid}")]
+        public async Task<ActionResult> DeleteTeamById(int id, string userGuid)
         {
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+            TeamUser teamUser = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == id && x.IdUser == user.Id);
+
+            if (!teamUser.Role.Equals("ADMIN"))
+            {
+                return BadRequest("User is not admin");
+            }
+
             Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == id);
 
             if (team == null)

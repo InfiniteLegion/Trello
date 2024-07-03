@@ -300,16 +300,19 @@ public partial class CheloDbContext : DbContext
             entity.ToTable("user_card");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.GuidUser)
+                .HasMaxLength(55)
+                .HasColumnName("guid_user");
             entity.Property(e => e.IdCard).HasColumnName("id_card");
-            entity.Property(e => e.IdUser).HasColumnName("id_user");
+
+            entity.HasOne(d => d.GuidUserNavigation).WithMany(p => p.UserCards)
+                .HasPrincipalKey(p => p.Guid)
+                .HasForeignKey(d => d.GuidUser)
+                .HasConstraintName("user_card_guid_user_fkey");
 
             entity.HasOne(d => d.IdCardNavigation).WithMany(p => p.UserCards)
                 .HasForeignKey(d => d.IdCard)
                 .HasConstraintName("user_card_id_card_fkey");
-
-            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.UserCards)
-                .HasForeignKey(d => d.IdUser)
-                .HasConstraintName("user_card_id_user_fkey");
         });
 
         modelBuilder.Entity<UserInfo>(entity =>

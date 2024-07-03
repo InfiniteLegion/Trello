@@ -65,7 +65,7 @@ namespace Trello.Classes.Mapper
             var users = new List<UserInfo>();
             foreach (var item in userCards)
             {
-                UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Id == item.IdUser);
+                UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(item.GuidUser));
                 users.Add(user);
             }
 

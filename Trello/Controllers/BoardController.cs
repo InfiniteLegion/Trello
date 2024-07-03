@@ -21,10 +21,19 @@ namespace Trello.Controllers
             this.boardMapper = boardMapper;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<BoardDTO>> GetBoardById(int id)
+        [HttpGet("{id}&user={userGuid}")]
+        public async Task<ActionResult<BoardDTO>> GetBoardById(int id, string userGuid)
         {
             Board board = await db.Boards.FirstOrDefaultAsync(x => x.Id == id);
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+            Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == board.IdTeam);
+            TeamUser teamUser = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == team.Id && x.IdUser == user.Id);
+
+            if (teamUser == null)
+            {
+                return BadRequest("User access error");
+            }
+
             if (board == null)
             {
                 return BadRequest("Board not found");
@@ -67,10 +76,18 @@ namespace Trello.Controllers
             return Ok(board);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteBoardById(int id)
+        [HttpDelete("{id}&user={userGuid}")]
+        public async Task<ActionResult> DeleteBoardById(int id, string userGuid)
         {
             Board board = await db.Boards.FirstOrDefaultAsync(x => x.Id == id);
+            UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
+            Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == board.IdTeam);
+            TeamUser teamUser = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == team.Id && x.IdUser == user.Id);
+
+            if (teamUser == null)
+            {
+                return BadRequest("User access error");
+            }
 
             if (board == null)
             {
