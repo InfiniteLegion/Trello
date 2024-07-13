@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Trello.Classes;
+using Trello.Classes.DTO;
+using Trello.Classes.Mapper;
 using Trello.Models;
 
 namespace Trello.Controllers
@@ -10,8 +12,13 @@ namespace Trello.Controllers
     public class TeamController : ControllerBase
     {
         private CheloDbContext db;
+        private readonly UserMapper userMapper;
 
-        public TeamController(CheloDbContext db) { this.db = db; }
+        public TeamController(CheloDbContext db, UserMapper userMapper) 
+        { 
+            this.db = db; 
+            this.userMapper = userMapper;
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Team>>> GetAllTeams()
@@ -93,6 +100,11 @@ namespace Trello.Controllers
             UserInfo user = await db.UserInfos.FirstOrDefaultAsync(x => x.Guid.Equals(userGuid));
             TeamUser teamUser = await db.TeamUsers.FirstOrDefaultAsync(x => x.IdTeam == id && x.IdUser == user.Id);
 
+            if (teamUser == null)
+            {
+                return BadRequest("User does not belong to this team");
+            }
+
             if (!teamUser.Role.Equals("ADMIN"))
             {
                 return BadRequest("User is not admin");
@@ -129,7 +141,7 @@ namespace Trello.Controllers
         }
 
         [HttpGet("{id}/users")]
-        public async Task<ActionResult<IEnumerable<UserInfo>>> GetAllTeamMembers(int id)
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllTeamMembers(int id)
         {
             Team team = await db.Teams.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -145,7 +157,14 @@ namespace Trello.Controllers
                 users.Add(await db.UserInfos.FirstOrDefaultAsync(x => x.Id == item.IdUser));
             }
 
-            return users;
+            var userDTOs = new List<UserDTO>();
+            foreach (var item in users)
+            {
+                var userDTO = await userMapper.ToDTO(item);
+                userDTOs.Add(userDTO);
+            }
+
+            return userDTOs;
         }
     }
 }
